@@ -84,6 +84,7 @@ int main(int argc, char *argv[]) {
 	do {
 		/*EMPIEZA EL PROGRAMA DEL SERVIDOR*/
 		crearTablas();
+		importarDatos();
 		char opcion;
 		char nomC[20], conC[20], nomA[20], conA[20];
 		int resul;

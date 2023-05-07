@@ -1,6 +1,7 @@
 #include "bbdd.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "sqlite3.h"
 
 //CREACION DE TABLAS Y FUNCIONES DE MENU
@@ -62,6 +63,8 @@ int importarMarcas() {
 	}
 
 	sqlite3_close(db);
+	free(codigo);
+	free(nombre);
 	return 0;
 
 }
@@ -129,6 +132,10 @@ int importarMateriales() {
 	}
 
 	sqlite3_close(db);
+	free(codigo);
+	free(nombre);
+	free(color);
+	free(codigoMarca);
 	return 0;
 
 }
@@ -192,6 +199,8 @@ int importarPersonas() {
 	}
 
 	sqlite3_close(db);
+	free(nombre);
+	free(contrasenya);
 	return 0;
 
 }
@@ -257,6 +266,8 @@ int importarCompras() {
 	}
 
 	sqlite3_close(db);
+	free(nombreProducto);
+	free(codigoMarca);
 	return 0;
 
 }
