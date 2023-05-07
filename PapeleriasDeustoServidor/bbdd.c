@@ -29,9 +29,11 @@ int crearTablaMarca() {
 	return 0;
 }
 
-/*int importarMarcas() {
+int importarMarcas() {
 	FILE *pf;
-	Marca m;
+	char *codigo = malloc(sizeof(char)*20);
+	char *nombre = malloc(sizeof(char)*20);
+
 	char sql[200];
 	sqlite3 *db;
 	int rc = sqlite3_open("Datos.sqlite", &db);
@@ -44,8 +46,8 @@ int crearTablaMarca() {
 
 	pf = fopen("Marcas.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%s %s", m.cod, m.nom) != EOF) {
-			sprintf(sql, "INSERT INTO marca VALUES('%s','%s')", m.cod, m.nom);
+		while (fscanf(pf, "%s %s", codigo, nombre) != EOF) {
+			sprintf(sql, "INSERT INTO marca VALUES('%s','%s')", codigo, nombre);
 			char *errmsg = NULL;
 			rc = sqlite3_exec(db, sql, NULL, 0, &errmsg);
 			if (rc != SQLITE_OK) {
@@ -62,7 +64,7 @@ int crearTablaMarca() {
 	sqlite3_close(db);
 	return 0;
 
-}*/
+}
 
 int crearTablaMateriales() {
 	sqlite3 *db;
@@ -88,9 +90,14 @@ int crearTablaMateriales() {
 	return 0;
 }
 
-/*int importarMateriales() {
+int importarMateriales() {
 	FILE *pf;
-	Material m;
+	char *codigo = malloc(sizeof(char)*20);
+	char *nombre = malloc(sizeof(char)*30);
+	char *color = malloc(sizeof(char)*20);
+	float precio;
+	int unidades;
+	char *codigoMarca = malloc(sizeof(char)*20);
 	char sql[200];
 	sqlite3 *db;
 	int rc = sqlite3_open("Datos.sqlite", &db);
@@ -103,11 +110,11 @@ int crearTablaMateriales() {
 
 	pf = fopen("Materiales.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%s %s %s %f %i %s", m.codigo, m.nom, m.color,
-				&m.precio, &m.unidades, m.m.cod) != EOF) {
+		while (fscanf(pf, "%s %s %s %f %i %s", codigo, nombre, color,
+				precio, unidades, codigoMarca) != EOF) {
 			sprintf(sql,
 					"INSERT INTO material VALUES ('%s', '%s', '%s', %.2f, %i, '%s')",
-					m.codigo, m.nom, m.color, m.precio, m.unidades, m.m.cod);
+					codigo, nombre, color, precio, unidades, codigoMarca);
 			char *errmsg = NULL;
 			rc = sqlite3_exec(db, sql, NULL, 0, &errmsg);
 			if (rc != SQLITE_OK) {
@@ -124,7 +131,7 @@ int crearTablaMateriales() {
 	sqlite3_close(db);
 	return 0;
 
-}*/
+}
 
 int crearTablaPersona() {
 	sqlite3 *db;
@@ -150,9 +157,11 @@ int crearTablaPersona() {
 	return 0;
 }
 
-/*int importarPersonas() {
+int importarPersonas() {
 	FILE *pf;
-	Persona p;
+	char *nombre = malloc(sizeof(char)*30);
+	char *contrasenya = malloc(sizeof(char)*30);
+	int permiso;
 	char sql[200];
 	sqlite3 *db;
 	int rc = sqlite3_open("Datos.sqlite", &db);
@@ -165,10 +174,10 @@ int crearTablaPersona() {
 
 	pf = fopen("Personas.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%s %s %i", p.nombre, p.contrasenya, &p.permiso)
+		while (fscanf(pf, "%s %s %i", nombre, contrasenya, permiso)
 				!= EOF) {
 			sprintf(sql, "INSERT INTO persona VALUES ('%s', '%s', %i)",
-					p.nombre, p.contrasenya, p.permiso);
+					nombre, contrasenya, permiso);
 			char *errmsg = NULL;
 			rc = sqlite3_exec(db, sql, NULL, 0, &errmsg);
 			if (rc != SQLITE_OK) {
@@ -185,7 +194,7 @@ int crearTablaPersona() {
 	sqlite3_close(db);
 	return 0;
 
-}*/
+}
 
 int crearTablaCompra() {
 	sqlite3 *db;
@@ -211,9 +220,13 @@ int crearTablaCompra() {
 	return 0;
 }
 
-/*int importarCompras() {
+int importarCompras() {
 	FILE *pf;
-	Compra c;
+	int ticket;
+	char *nombreProducto = malloc(sizeof(char)*20);
+	char *codigoMarca = malloc(sizeof(char)*20);
+	int cantidad;
+	float importe;
 	char sql[200];
 	sqlite3 *db;
 	int rc = sqlite3_open("Datos.sqlite", &db);
@@ -226,10 +239,10 @@ int crearTablaCompra() {
 
 	pf = fopen("Compras.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%i %s %s %i %f", &c.ticket, c.p.nombre, c.m.codigo,
-				&c.cantidad, &c.importe) != EOF) {
+		while (fscanf(pf, "%i %s %s %i %f", ticket, nombreProducto, codigoMarca,
+				cantidad, importe) != EOF) {
 			sprintf(sql, "INSERT INTO compra VALUES (%i, '%s', '%s', %i , %f)",
-					c.ticket, c.p.nombre, c.m.codigo, c.cantidad, c.importe);
+					ticket, nombreProducto, codigoMarca, cantidad, importe);
 			char *errmsg = NULL;
 			rc = sqlite3_exec(db, sql, NULL, 0, &errmsg);
 			if (rc != SQLITE_OK) {
@@ -246,7 +259,7 @@ int crearTablaCompra() {
 	sqlite3_close(db);
 	return 0;
 
-}*/
+}
 
 int registrarUsuario(char *nombre, char *contrasenya, int permiso) {
 	sqlite3 *db;
@@ -500,13 +513,13 @@ int crearTablas() {
 	return 0;
 }
 
-/*int importarDatos() {
+int importarDatos() {
 	importarMarcas();
 	importarMateriales();
 	importarCompras();
 	importarPersonas();
 	return 0;
-}*/
+}
 
 //BORRADO DE DATOS
 

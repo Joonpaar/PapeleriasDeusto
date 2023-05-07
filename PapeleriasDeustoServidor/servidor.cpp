@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+extern "C"
+{
+  #include "bbdd.h"
+}
 
 #include <stdio.h>
 #include <winsock2.h>
@@ -79,6 +83,7 @@ int main(int argc, char *argv[]) {
 	int fin = 0;
 	do {
 		/*EMPIEZA EL PROGRAMA DEL SERVIDOR*/
+		crearTablas();
 		char opcion;
 		char nomC[20], conC[20], nomA[20], conA[20];
 		int resul;
