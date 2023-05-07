@@ -3,7 +3,7 @@
 #include <iostream>
 
 using namespace std;
-namespace containerMarca{
+namespace containerMarcaCliente{
 Marca::Marca() {
 	// TODO Auto-generated constructor stub
 

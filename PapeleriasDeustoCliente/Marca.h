@@ -2,7 +2,7 @@
 #define MARCA_H_
 #include <list>
 
-namespace containerMarca{
+namespace containerMarcaCliente{
 class Marca {
 private:
 	char *nom;

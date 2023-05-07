@@ -1,7 +1,7 @@
 #ifndef PERSONA_H_
 #define PERSONA_H_
 
-namespace containerPersona{
+namespace containerPersonaCliente{
 class Persona {private:
 	char *nombre;
 	char *contrasenya;

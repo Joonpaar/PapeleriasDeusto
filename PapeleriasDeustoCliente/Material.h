@@ -2,9 +2,9 @@
 #define MATERIAL_H_
 #include "Marca.h"
 
-using namespace containerMarca;
+using namespace containerMarcaCliente;
 
-namespace containerMaterial{
+namespace containerMaterialCliente{
 class Material {
 private:
 	int unidades;

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-namespace containerCompra{
+namespace containerCompraCliente{
 Compra::Compra() {
 	// TODO Auto-generated constructor stub
 

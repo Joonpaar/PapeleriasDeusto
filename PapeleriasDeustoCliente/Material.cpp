@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace containerMaterial{
+namespace containerMaterialCliente{
 Material::Material() {
 	// TODO Auto-generated constructor stub
 

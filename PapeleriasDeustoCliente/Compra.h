@@ -3,10 +3,10 @@
 #include "Persona.h"
 #include "Material.h"
 
-using namespace containerPersona;
-using namespace containerMaterial;
+using namespace containerPersonaCliente;
+using namespace containerMaterialCliente;
 
-namespace containerCompra{
+namespace containerCompraCliente{
 class Compra {
 private:
 	int ticket;

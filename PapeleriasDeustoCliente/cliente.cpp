@@ -22,7 +22,7 @@ char menuAdministrador(){
 	cout<<"1. "<<endl;
 	cout<<"2. "<<endl;
 	cout<<"0. Salir"<<endl;
-	cout<<"Elige una opci�n: ";
+	cout<<"Elige una opcion: ";
 	cin>>opcion;
 	return opcion;
 }

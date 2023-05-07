@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "sqlite3.h"
-#include "persona.h"
-#include "compra.h"
 
 //CREACION DE TABLAS Y FUNCIONES DE MENU
 
@@ -31,7 +29,7 @@ int crearTablaMarca() {
 	return 0;
 }
 
-int importarMarcas() {
+/*int importarMarcas() {
 	FILE *pf;
 	Marca m;
 	char sql[200];
@@ -64,7 +62,7 @@ int importarMarcas() {
 	sqlite3_close(db);
 	return 0;
 
-}
+}*/
 
 int crearTablaMateriales() {
 	sqlite3 *db;
@@ -90,7 +88,7 @@ int crearTablaMateriales() {
 	return 0;
 }
 
-int importarMateriales() {
+/*int importarMateriales() {
 	FILE *pf;
 	Material m;
 	char sql[200];
@@ -126,7 +124,7 @@ int importarMateriales() {
 	sqlite3_close(db);
 	return 0;
 
-}
+}*/
 
 int crearTablaPersona() {
 	sqlite3 *db;
@@ -152,7 +150,7 @@ int crearTablaPersona() {
 	return 0;
 }
 
-int importarPersonas() {
+/*int importarPersonas() {
 	FILE *pf;
 	Persona p;
 	char sql[200];
@@ -187,7 +185,7 @@ int importarPersonas() {
 	sqlite3_close(db);
 	return 0;
 
-}
+}*/
 
 int crearTablaCompra() {
 	sqlite3 *db;
@@ -213,7 +211,7 @@ int crearTablaCompra() {
 	return 0;
 }
 
-int importarCompras() {
+/*int importarCompras() {
 	FILE *pf;
 	Compra c;
 	char sql[200];
@@ -248,9 +246,9 @@ int importarCompras() {
 	sqlite3_close(db);
 	return 0;
 
-}
+}*/
 
-int registrarUsuario(Persona p) {
+int registrarUsuario(char *nombre, char *contrasenya, int permiso) {
 	sqlite3 *db;
 	int rc = sqlite3_open("Datos.sqlite", &db);
 	if (rc) {
@@ -260,8 +258,8 @@ int registrarUsuario(Persona p) {
 		return 1;
 	}
 	char sql[200];
-	sprintf(sql, "INSERT INTO persona VALUES ('%s', '%s', %i)", p.nombre,
-			p.contrasenya, p.permiso);
+	sprintf(sql, "INSERT INTO persona VALUES ('%s', '%s', %i)", nombre,
+			contrasenya, permiso);
 
 	char *errmsg = NULL;
 	rc = sqlite3_exec(db, sql, NULL, 0, &errmsg);
@@ -275,14 +273,14 @@ int registrarUsuario(Persona p) {
 	return 0;
 }
 
-int inicioSesionAdmin(Persona p) {
+int inicioSesionAdmin(char *nombre, char *contrasenya) {
 	sqlite3 *db;
 	sqlite3_stmt *stmt;
 	char sql[200];
 	int result;
 	sprintf(sql,
 			"SELECT * FROM persona WHERE nombre = '%s' AND contrasenya = '%s' AND permiso = 1",
-			p.nombre, p.contrasenya);
+			nombre, contrasenya);
 	result = sqlite3_open("Datos.sqlite", &db);
 
 	if (result != SQLITE_OK) {
@@ -302,7 +300,7 @@ int inicioSesionAdmin(Persona p) {
 
 }
 
-int anyadirMaterial(Material m) {
+int anyadirMaterial(char *codigo, char *nombre, char *color, float precio, int unidades, char *codigoMarca) {
 	sqlite3 *db;
 	sqlite3_stmt *stmt;
 	int result;
@@ -316,7 +314,7 @@ int anyadirMaterial(Material m) {
 	}
 	sprintf(sql,
 			"INSERT INTO material VALUES ('%s', '%s', '%s', %.2f, %i, '%s')",
-			m.codigo, m.nom, m.color, m.precio, m.unidades, m.m.cod);
+			codigo, nombre, color, precio, unidades, codigoMarca);
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
@@ -502,13 +500,13 @@ int crearTablas() {
 	return 0;
 }
 
-int importarDatos() {
+/*int importarDatos() {
 	importarMarcas();
 	importarMateriales();
 	importarCompras();
 	importarPersonas();
 	return 0;
-}
+}*/
 
 //BORRADO DE DATOS
 
@@ -602,14 +600,14 @@ int borrarDatosTablas() {
 
 //COMPARAR COSAS
 
-int comprobacionExiste(Material m) {
+int comprobacionExiste(char *codigo, char *nombre, char *color, char *codigoMarca) {
 	sqlite3 *db;
 	sqlite3_stmt *stmt;
 	char sql[200];
 	int result;
 	sprintf(sql,
 			"SELECT * FROM material WHERE cod_material = '%s' OR nombre_material = '%s' AND color = '%s' AND cod_marca = '%s'",
-			m.codigo, m.nom, m.color, m.m.cod);
+			codigo, nombre, color, codigoMarca);
 	result = sqlite3_open("Datos.sqlite", &db);
 
 	if (result != SQLITE_OK) {
