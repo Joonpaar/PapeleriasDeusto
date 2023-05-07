@@ -3,7 +3,7 @@
 #include <iostream>
 
 using namespace std;
-
+namespace containerMarca{
 Marca::Marca() {
 	// TODO Auto-generated constructor stub
 
@@ -20,13 +20,30 @@ void anyadirMarca(std::list<Marca> &listaMarca, const Marca &m) {
 	listaMarca.push_back(m);
 }
 
-/*void verMarca(const Marca &m){
-	cout<<"CODIGO: "<<m.cod<<endl;
-	cout<<"NOMBRE: "<<m.nom<<endl;
-}*/
+void Marca::verMarca(const Marca &m) {
+	cout << "CODIGO: " << m.cod << endl;
+	cout << "NOMBRE: " << m.nom << endl;
+}
+
+char* Marca::getCod() const {
+	return this->cod;
+}
+
+void Marca::setCod(char *cod) {
+	this->cod = cod;
+}
+
+char* Marca::getNom() const {
+	return nom;
+}
+
+void Marca::setNom(char *nom) {
+	this->nom = nom;
+}
 
 Marca::~Marca() {
-	delete[]cod;
-	delete[]nom;
+	delete[] cod;
+	delete[] nom;
+}
 }
 

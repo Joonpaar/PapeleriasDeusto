@@ -3,6 +3,10 @@
 #include "Persona.h"
 #include "Material.h"
 
+using namespace containerPersona;
+using namespace containerMaterial;
+
+namespace containerCompra{
 class Compra {
 private:
 	int ticket;
@@ -16,5 +20,6 @@ public:
 	void verCompra(Compra c);
 	virtual ~Compra();
 };
+}
 
 #endif /* COMPRA_H_ */

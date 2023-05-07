@@ -4,14 +4,15 @@
 
 using namespace std;
 
+namespace containerPersona{
 Persona::Persona() {
 
 }
 
-/*void verPersona(const Persona &p){
-	cout<<"NOMBRE: "<<p.nombre<<endl;
-	cout<<"CONTRASENYA: "<<p.contrasenya<<endl;
-}*/
+void Persona::verPersona(const Persona &p) {
+	cout << "NOMBRE: " << p.nombre << endl;
+	cout << "CONTRASENYA: " << p.contrasenya << endl;
+}
 
 Persona::Persona(char *nom, char *con) {
 	this->nombre = new char[strlen(nom) + 1];
@@ -21,8 +22,24 @@ Persona::Persona(char *nom, char *con) {
 
 }
 
-Persona::~Persona() {
-	delete[]nombre;
-	delete[]contrasenya;
+char* Persona::getContrasenya() const {
+	return contrasenya;
 }
 
+void Persona::setContrasenya(char *contrasenya) {
+	this->contrasenya = contrasenya;
+}
+
+char* Persona::getNombre() const {
+	return nombre;
+}
+
+void Persona::setNombre(char *nombre) {
+	this->nombre = nombre;
+}
+
+Persona::~Persona() {
+	delete[] nombre;
+	delete[] contrasenya;
+}
+}
