@@ -11,6 +11,7 @@ int crearTablas();
 //MENU ADMIN
 int registrarUsuario(char *nombre, char *contrasenya, int permiso);
 int inicioSesionAdmin(char *nombre, char *contrasenya);
+int inicioSesionCliente(char *nombre, char *contrasenya);
 
 //MENU MATERIALES
 int anyadirMaterial(char *codigo, char *nombre, char *color, float precio, int unidades, char *codigoMarca);

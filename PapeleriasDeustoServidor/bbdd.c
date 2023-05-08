@@ -32,8 +32,8 @@ int crearTablaMarca() {
 
 int importarMarcas() {
 	FILE *pf;
-	char *codigo = malloc(sizeof(char)*20);
-	char *nombre = malloc(sizeof(char)*20);
+	char *codigo = malloc(sizeof(char) * 20);
+	char *nombre = malloc(sizeof(char) * 20);
 
 	char sql[200];
 	sqlite3 *db;
@@ -95,12 +95,12 @@ int crearTablaMateriales() {
 
 int importarMateriales() {
 	FILE *pf;
-	char *codigo = malloc(sizeof(char)*20);
-	char *nombre = malloc(sizeof(char)*30);
-	char *color = malloc(sizeof(char)*20);
+	char *codigo = malloc(sizeof(char) * 20);
+	char *nombre = malloc(sizeof(char) * 30);
+	char *color = malloc(sizeof(char) * 20);
 	float precio;
 	int unidades;
-	char *codigoMarca = malloc(sizeof(char)*20);
+	char *codigoMarca = malloc(sizeof(char) * 20);
 	char sql[200];
 	sqlite3 *db;
 	int rc = sqlite3_open("Datos.sqlite", &db);
@@ -113,8 +113,8 @@ int importarMateriales() {
 
 	pf = fopen("Materiales.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%s %s %s %f %i %s", codigo, nombre, color,
-				precio, unidades, codigoMarca) != EOF) {
+		while (fscanf(pf, "%s %s %s %f %i %s", codigo, nombre, color, &precio,
+				&unidades, codigoMarca) != EOF) {
 			sprintf(sql,
 					"INSERT INTO material VALUES ('%s', '%s', '%s', %.2f, %i, '%s')",
 					codigo, nombre, color, precio, unidades, codigoMarca);
@@ -150,7 +150,7 @@ int crearTablaPersona() {
 		return 1;
 	}
 	char *sql =
-			"CREATE TABLE IF NOT EXISTS persona(nombre STRING PRIMARY KEY, contrasenya TEXT, permiso INT);";
+			"CREATE TABLE IF NOT EXISTS persona(nombre STRING PRIMARY KEY, contrasenya TEXT, permiso INT, id INT);";
 
 	char *errmsg = NULL;
 	rc = sqlite3_exec(db, sql, NULL, 0, &errmsg);
@@ -166,9 +166,9 @@ int crearTablaPersona() {
 
 int importarPersonas() {
 	FILE *pf;
-	char *nombre = malloc(sizeof(char)*30);
-	char *contrasenya = malloc(sizeof(char)*30);
-	int permiso;
+	char *nombre = malloc(sizeof(char) * 30);
+	char *contrasenya = malloc(sizeof(char) * 30);
+	int permiso, id;
 	char sql[200];
 	sqlite3 *db;
 	int rc = sqlite3_open("Datos.sqlite", &db);
@@ -181,10 +181,10 @@ int importarPersonas() {
 
 	pf = fopen("Personas.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%s %s %i", nombre, contrasenya, permiso)
+		while (fscanf(pf, "%s %s %i %i", nombre, contrasenya, &permiso, &id)
 				!= EOF) {
-			sprintf(sql, "INSERT INTO persona VALUES ('%s', '%s', %i)",
-					nombre, contrasenya, permiso);
+			sprintf(sql, "INSERT INTO persona VALUES ('%s', '%s', %i, %i)",
+					nombre, contrasenya, permiso, id);
 			char *errmsg = NULL;
 			rc = sqlite3_exec(db, sql, NULL, 0, &errmsg);
 			if (rc != SQLITE_OK) {
@@ -232,8 +232,8 @@ int crearTablaCompra() {
 int importarCompras() {
 	FILE *pf;
 	int ticket;
-	char *nombreProducto = malloc(sizeof(char)*20);
-	char *codigoMarca = malloc(sizeof(char)*20);
+	char *nombreProducto = malloc(sizeof(char) * 20);
+	char *codigoMarca = malloc(sizeof(char) * 20);
 	int cantidad;
 	float importe;
 	char sql[200];
@@ -248,8 +248,8 @@ int importarCompras() {
 
 	pf = fopen("Compras.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%i %s %s %i %f", ticket, nombreProducto, codigoMarca,
-				cantidad, importe) != EOF) {
+		while (fscanf(pf, "%i %s %s %i %f", &ticket, nombreProducto,
+				codigoMarca, &cantidad, &importe) != EOF) {
 			sprintf(sql, "INSERT INTO compra VALUES (%i, '%s', '%s', %i , %f)",
 					ticket, nombreProducto, codigoMarca, cantidad, importe);
 			char *errmsg = NULL;
@@ -324,7 +324,35 @@ int inicioSesionAdmin(char *nombre, char *contrasenya) {
 
 }
 
-int anyadirMaterial(char *codigo, char *nombre, char *color, float precio, int unidades, char *codigoMarca) {
+int inicioSesionCliente(char *nombre, char *contrasenya) {
+	sqlite3 *db;
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result;
+	sprintf(sql,
+			"SELECT * FROM persona WHERE nombre = '%s' AND contrasenya = '%s' AND permiso = 0",
+			nombre, contrasenya);
+	result = sqlite3_open("Datos.sqlite", &db);
+
+	if (result != SQLITE_OK) {
+		fprintf(stderr, "No se pudo abrir la base de datos: %s\n",
+				sqlite3_errmsg(db));
+		sqlite3_close(db);
+		return -1;
+	}
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	if (result == SQLITE_ROW) {
+		sqlite3_finalize(stmt); //Cerrar la sentencia
+		sqlite3_close(db);
+		return 1;
+	}
+	return 0;
+
+}
+
+int anyadirMaterial(char *codigo, char *nombre, char *color, float precio,
+		int unidades, char *codigoMarca) {
 	sqlite3 *db;
 	sqlite3_stmt *stmt;
 	int result;
@@ -515,7 +543,6 @@ int verCompras() {
 
 }
 
-
 int crearTablas() {
 	crearTablaMarca();
 	crearTablaMateriales();
@@ -624,7 +651,8 @@ int borrarDatosTablas() {
 
 //COMPARAR COSAS
 
-int comprobacionExiste(char *codigo, char *nombre, char *color, char *codigoMarca) {
+int comprobacionExiste(char *codigo, char *nombre, char *color,
+		char *codigoMarca) {
 	sqlite3 *db;
 	sqlite3_stmt *stmt;
 	char sql[200];

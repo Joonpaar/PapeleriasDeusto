@@ -38,6 +38,11 @@ void Persona::setNombre(char *nombre) {
 	this->nombre = nombre;
 }
 
+void Usuario::verUsuario(const Usuario &u){
+	Persona::verPersona(u);
+	cout<<"ID: "<<u.id<<endl;
+}
+
 Persona::~Persona() {
 	delete[] nombre;
 	delete[] contrasenya;

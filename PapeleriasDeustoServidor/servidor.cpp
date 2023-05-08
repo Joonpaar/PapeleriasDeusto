@@ -4,9 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
-extern "C"
-{
-  #include "bbdd.h"
+extern "C" {
+#include "bbdd.h"
 }
 
 #include <stdio.h>
@@ -85,7 +84,7 @@ int main(int argc, char *argv[]) {
 		/*EMPIEZA EL PROGRAMA DEL SERVIDOR*/
 		crearTablas();
 		importarDatos();
-		char opcion;
+		char opcion, opcionC, opcionA;
 		char nomC[20], conC[20], nomA[20], conA[20];
 		int resul;
 		do {
@@ -93,32 +92,31 @@ int main(int argc, char *argv[]) {
 			sscanf(recvBuff, "%c", &opcion);
 			switch (opcion) {
 			case '1':
-				recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //Recibe el nombre
-				sprintf(nomA, "%s", recvBuff);
-				recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //Recibe la contrase�a
-				sprintf(conA, "%s", recvBuff);
 				break;
 			case '2':
-				recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //Recibe el nombre
-				sprintf(nomC, "%s", recvBuff);
-				recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //Recibe la contrase�a
-				sprintf(conC, "%s", recvBuff);
-
-				//La busc�is en la BBDD
-//				if (strcmp(nom, "ADMIN") == 0 && strcmp(con, "ADMIN") == 0) {
-//					resul = 1;
-//				} else if (strcmp(nom, "CLIENTE") == 0 && strcmp(con, "CLIENTE") == 0) {
-//					resul = 2;
-//				} else {
-//					resul = 0;
-//				}
-				/*
-				 * resul = 1 es un admin
-				 * resul = 2 es un cliente
-				 * resul = 0 no est� registrado
-				 * */
-				sprintf(sendBuff, "%d", resul);
-				send(comm_socket, sendBuff, sizeof(sendBuff), 0); //Le env�a al cliente 1,2,0
+				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+				sscanf(recvBuff, "%c", &opcionC);
+				switch (opcionC) {
+				case '1':
+					recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //Recibe el nombre
+					sprintf(nomC, "%s", recvBuff);
+					recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //Recibe la contrase�a
+					sprintf(conC, "%s", recvBuff);
+					if (inicioSesionCliente(nomC, conC) == 1) {
+						resul = 1;
+					} else {
+						resul = 0;
+					}
+					sprintf(sendBuff, "%d", resul);
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0); //Le env�a al cliente 1,2,0
+					break;
+				case '2':
+					break;
+				case '0':
+					break;
+				default:
+					cout << "No existe opcion" << endl;
+				}
 				break;
 			case '0':
 				fin = 1;
@@ -126,7 +124,8 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 		} while (opcion != '0');
-
+		guardarDatos();
+		borrarDatosTablas();
 		/*ACABA EL PROGRAMA DEL SERVIDOR*/
 
 	} while (fin == 0);

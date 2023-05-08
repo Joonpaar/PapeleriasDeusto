@@ -7,34 +7,55 @@
 #define SERVER_PORT 6000
 using namespace std;
 
-char menu(){
+char menu() {
 	char opcion;
-	cout<<"1. Admin"<<endl;
-	cout<<"2. Cliente"<<endl;
-	cout<<"0. Salir"<<endl;
-	cout<<"Elige una opcion: ";
-	cin>>opcion;
+	cout << "1. Admin" << endl;
+	cout << "2. Cliente" << endl;
+	cout << "0. Salir" << endl;
+	cout << "Elige una opcion: ";
+	cin >> opcion;
 	return opcion;
 }
-char menuAdministrador(){
+
+char menuCuentaCliente() {
 	char opcion;
-	cout<<"MENU ADMINISRADOR"<<endl;
-	cout<<"1. "<<endl;
-	cout<<"2. "<<endl;
-	cout<<"0. Salir"<<endl;
-	cout<<"Elige una opcion: ";
-	cin>>opcion;
+	cout << "1. INICIAR SESION" << endl;
+	cout << "2. REGISTRARSE" << endl;
+	cout << "0. ATRAS" << endl;
+	cout << "Elige una opcion: " << endl;
+	cin >> opcion;
 	return opcion;
 }
-char menuCliente(){
+
+char menuCuentaAdmin() {
 	char opcion;
-	cout<<"MENU CLIENTE"<<endl;
-	cout<<"1. COMPRAR"<<endl;
-	cout<<"2. "<<endl;
-	cout<<"3. CARRITO"<<endl;
-	cout<<"0. Salir"<<endl;
-	cout<<"Elige una opci�n: ";
-	cin>>opcion;
+	cout << "1. INICIAR SESION" << endl;
+	cout << "2. REGISTRARSE" << endl;
+	cout << "0. ATRAS" << endl;
+	cout << "Elige una opcion: " << endl;
+	cin >> opcion;
+	return opcion;
+}
+
+char menuAdministrador() {
+	char opcion;
+	cout << "MENU ADMINISRADOR" << endl;
+	cout << "1. " << endl;
+	cout << "2. " << endl;
+	cout << "0. Salir" << endl;
+	cout << "Elige una opcion: ";
+	cin >> opcion;
+	return opcion;
+}
+char menuCliente() {
+	char opcion;
+	cout << "MENU CLIENTE" << endl;
+	cout << "1. COMPRAR" << endl;
+	cout << "2. HISTORIAL" << endl;
+	cout << "3. CARRITO" << endl;
+	cout << "0. CERRAR SESION" << endl;
+	cout << "Elige una opcion: ";
+	cin >> opcion;
 	return opcion;
 }
 
@@ -82,58 +103,48 @@ int main(int argc, char *argv[]) {
 			ntohs(server.sin_port));
 
 	/*EMPIEZA EL PROGRAMA DEL CLIENTE*/
-	char opcion,opcionA,opcionC;
-	char nom[20],con[20];
+	char opcion, opcionA, opcionC, opcionC2;
+	char nom[20], con[20];
 	int resul;
-	do{
+	do {
 		opcion = menu();
-		sprintf(sendBuff,"%c",opcion);
+		sprintf(sendBuff, "%c", opcion);
 		send(s, sendBuff, sizeof(sendBuff), 0);
-
-
-
-		switch(opcion){
-		case '1': break;
-		case '2':
-			cout<<"NOMBRE: ";cin>>nom;
-			cout<<"CONTRASE�A: ";cin>>con;
-			sprintf(sendBuff,"%s",nom);
-			send(s, sendBuff, sizeof(sendBuff), 0); //Env�o el nombre al servidor
-			sprintf(sendBuff,"%s",con);
-			send(s, sendBuff, sizeof(sendBuff), 0); //Env�o la contrase�a al servidor
-
-			recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesi�n
-			sscanf(recvBuff,"%d",&resul);
-			cout<<"RESULTADO: "<<resul<<endl;
-			if(resul==1){
-				do{
-					opcionA = menuAdministrador();
-					switch(opcionA){
-						case '1': break;
-						case '2': break;
-						case '0': break;
-						default: cout<<"La opci�n no es correcta"<<endl;
-					}
-				}while(opcionA!='0');
-			}else if(resul ==2){
-				do{
-					opcionC = menuCliente();
-					switch(opcionC){
-						case '1': break;
-						case '2': break;
-						case '0': break;
-						default: cout<<"La opci�n no es correcta"<<endl;
-					}
-				}while(opcionC!='0');
-			}else{
-				cout<<"El Inicio de Sesi�n no ha sido correcto"<<endl;
-			}
+		switch (opcion) {
+		case '1':
 			break;
-		case '0': cout<<"AGUR"<<endl;break;
-		default: cout<<"La opci�n seleccionada no es correcta"<<endl;
+		case '2':
+			opcionC = menuCuentaCliente();
+			sprintf(sendBuff, "%c", opcionC);
+			send(s, sendBuff, sizeof(sendBuff), 0);
+			switch (opcionC) {
+			case '1':
+				cout << "NOMBRE: ";
+				cin >> nom;
+				cout << "CONTRASENYA: ";
+				cin >> con;
+				sprintf(sendBuff, "%s", nom);
+				send(s, sendBuff, sizeof(sendBuff), 0); //Env�o el nombre al servidor
+				sprintf(sendBuff, "%s", con);
+				send(s, sendBuff, sizeof(sendBuff), 0); //Env�o la contrase�a al servidor
+				recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesi�n
+				sscanf(recvBuff, "%d", &resul);
+				cout << "RESULTADO: " << resul << endl;
+				if(resul==1){
+					opcionC2 = menuCliente();
+				}else{
+					cout<<"No existe este cliente"<<endl;
+				}
+				break;
+		case '0':
+			cout << "AGUR" << endl;
+			break;
+		default:
+			cout << "La opci�n seleccionada no es correcta" << endl;
+			}
 		}
 
-	}while(opcion!='0');
+	} while (opcion != '0');
 
 	/*ACABA EL PROGRAMA DEL CLIENTE*/
 	// CLOSING the socket and cleaning Winsock...
