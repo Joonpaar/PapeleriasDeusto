@@ -181,7 +181,7 @@ int importarPersonas() {
 
 	pf = fopen("Personas.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%s %s %i %i", nombre, contrasenya, &permiso, &id)
+		while (fscanf(pf, "[Usuario]\n Nombre: %s\n Contraseña: %s\n Permiso: %i\n ID: %i\n", nombre, contrasenya, &permiso, &id)
 				!= EOF) {
 			sprintf(sql, "INSERT INTO persona VALUES ('%s', '%s', %i, %i)",
 					nombre, contrasenya, permiso, id);
@@ -272,29 +272,30 @@ int importarCompras() {
 
 }
 
-int registrarUsuario(char *nombre, char *contrasenya, int permiso) {
+int registrarUsuario(char *nombre, char *contrasenya, int permiso, int id) {
 	sqlite3 *db;
 	int rc = sqlite3_open("Datos.sqlite", &db);
 	if (rc) {
 		fprintf(stderr, "No se pudo abrir la base de datos: %s\n",
 				sqlite3_errmsg(db));
 		sqlite3_close(db);
-		return 1;
+		return -1;
 	}
 	char sql[200];
-	sprintf(sql, "INSERT INTO persona VALUES ('%s', '%s', %i)", nombre,
-			contrasenya, permiso);
+	sprintf(sql, "INSERT INTO persona VALUES ('%s', '%s', %i, %i)", nombre,
+			contrasenya, permiso, id);
 
 	char *errmsg = NULL;
 	rc = sqlite3_exec(db, sql, NULL, 0, &errmsg);
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "No se pudo insertar en la tabla: %s\n", errmsg);
 		sqlite3_free(errmsg);
+		return 0;
 	} else {
 		printf("Se ha insertado correctamente.\n");
+		return 1;
 	}
 	sqlite3_close(db);
-	return 0;
 }
 
 int inicioSesionAdmin(char *nombre, char *contrasenya) {
@@ -311,7 +312,7 @@ int inicioSesionAdmin(char *nombre, char *contrasenya) {
 		fprintf(stderr, "No se pudo abrir la base de datos: %s\n",
 				sqlite3_errmsg(db));
 		sqlite3_close(db);
-		return -1;
+		return 0;
 	}
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	result = sqlite3_step(stmt); //Ejecutar la sentencia
@@ -321,7 +322,6 @@ int inicioSesionAdmin(char *nombre, char *contrasenya) {
 		return 1;
 	}
 	return 0;
-
 }
 
 int inicioSesionCliente(char *nombre, char *contrasenya) {
@@ -773,8 +773,8 @@ int guardarDatosPersonas() {
 
 	FILE *f = fopen("Personas.txt", "w"); // Abre el archivo para escritura y borra el contenido previo
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
-		fprintf(f, "%s %s %i", sqlite3_column_text(stmt, 0),
-				sqlite3_column_text(stmt, 1), sqlite3_column_int(stmt, 2));
+		fprintf(f, "[Usuario]\n Nombre: %s\n Contraseña: %s\n Permiso: %i\n ID: %i\n", sqlite3_column_text(stmt, 0),
+				sqlite3_column_text(stmt, 1), sqlite3_column_int(stmt, 2), sqlite3_column_int(stmt, 3));
 	}
 	fclose(f);
 
@@ -848,4 +848,18 @@ int guardarDatos() {
 	guardarDatosMateriales();
 	guardarDatosPersonas();
 	return 0;
+}
+int getNumPersonas() {
+	sqlite3 *db;
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result;
+	int contador;
+	result = sqlite3_open("Datos.sqlite", &db);
+	sprintf(sql, "SELECT COUNT(*) FROM persona");
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	contador = (int) sqlite3_column_double(stmt, 0);
+	sqlite3_finalize(stmt); //Cerrar la sentencia
+	return contador;
 }

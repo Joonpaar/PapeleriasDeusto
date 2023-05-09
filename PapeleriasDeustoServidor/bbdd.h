@@ -9,7 +9,7 @@ int crearTablaMateriales();
 int crearTablas();
 
 //MENU ADMIN
-int registrarUsuario(char *nombre, char *contrasenya, int permiso);
+int registrarUsuario(char *nombre, char *contrasenya, int permiso, int id);
 int inicioSesionAdmin(char *nombre, char *contrasenya);
 int inicioSesionCliente(char *nombre, char *contrasenya);
 
@@ -43,6 +43,7 @@ int comprobacionExiste(char *codigo, char *nombre, char *color, char *codigoMarc
 int datosMaterialesExisten();
 int datosComprasExisten();
 int datosMarcasExisten();
+int getNumPersonas();
 
 //GUARDADO DE DATOS
 int guardarDatosPersonas();

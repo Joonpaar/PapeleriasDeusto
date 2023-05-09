@@ -19,6 +19,7 @@ char menu() {
 
 char menuCuentaCliente() {
 	char opcion;
+	cout<<"CLIENTE"<<endl;
 	cout << "1. INICIAR SESION" << endl;
 	cout << "2. REGISTRARSE" << endl;
 	cout << "0. ATRAS" << endl;
@@ -29,6 +30,7 @@ char menuCuentaCliente() {
 
 char menuCuentaAdmin() {
 	char opcion;
+	cout<<"ADMIN"<<endl;
 	cout << "1. INICIAR SESION" << endl;
 	cout << "2. REGISTRARSE" << endl;
 	cout << "0. ATRAS" << endl;
@@ -103,7 +105,7 @@ int main(int argc, char *argv[]) {
 			ntohs(server.sin_port));
 
 	/*EMPIEZA EL PROGRAMA DEL CLIENTE*/
-	char opcion, opcionA, opcionC, opcionC2;
+	char opcion, opcionA, opcionC, opcionC2, opcionA2;
 	char nom[20], con[20];
 	int resul;
 	do {
@@ -112,38 +114,114 @@ int main(int argc, char *argv[]) {
 		send(s, sendBuff, sizeof(sendBuff), 0);
 		switch (opcion) {
 		case '1':
+			do {
+				opcionA = menuCuentaAdmin();
+				sprintf(sendBuff, "%c", opcionA);
+				send(s, sendBuff, sizeof(sendBuff), 0);
+				switch (opcionA) {
+				case '1':
+					cout << "NOMBRE: ";
+					cin >> nom;
+					cout << "CONTRASENYA: ";
+					cin >> con;
+					sprintf(sendBuff, "%s", nom);
+					send(s, sendBuff, sizeof(sendBuff), 0); //Envio el nombre al servidor
+					sprintf(sendBuff, "%s", con);
+					send(s, sendBuff, sizeof(sendBuff), 0); //Envio la contraseña al servidor
+
+					recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+					sscanf(recvBuff, "%d", &resul);
+					cout << "RESULTADO: " << resul << endl;
+					if (resul == 1) {
+						opcionA2 = menuAdministrador();
+					} else {
+						cout << "No existe este cliente" << endl;
+					}
+					break;
+				case '2':
+					cout << "NOMBRE: ";
+					cin >> nom;
+					cout << "CONTRASENYA: ";
+					cin >> con;
+					sprintf(sendBuff, "%s", nom);
+					send(s, sendBuff, sizeof(sendBuff), 0); //Envio el nombre al servidor
+					sprintf(sendBuff, "%s", con);
+					send(s, sendBuff, sizeof(sendBuff), 0); //Envio la contraseña al servidor
+
+					recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+					sscanf(recvBuff, "%d", &resul);
+					cout << "RESULTADO: " << resul << endl;
+					if (resul == 1) {
+						cout << "Admin Registrado Correctamente!" << endl;
+					} else {
+						cout << "Error al crear admin!" << endl;
+					}
+					break;
+
+				case '0':
+					break;
+				}
+
+			} while (opcionA != '0');
 			break;
 		case '2':
-			opcionC = menuCuentaCliente();
-			sprintf(sendBuff, "%c", opcionC);
-			send(s, sendBuff, sizeof(sendBuff), 0);
-			switch (opcionC) {
-			case '1':
-				cout << "NOMBRE: ";
-				cin >> nom;
-				cout << "CONTRASENYA: ";
-				cin >> con;
-				sprintf(sendBuff, "%s", nom);
-				send(s, sendBuff, sizeof(sendBuff), 0); //Env�o el nombre al servidor
-				sprintf(sendBuff, "%s", con);
-				send(s, sendBuff, sizeof(sendBuff), 0); //Env�o la contrase�a al servidor
-				recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesi�n
-				sscanf(recvBuff, "%d", &resul);
-				cout << "RESULTADO: " << resul << endl;
-				if(resul==1){
-					opcionC2 = menuCliente();
-				}else{
-					cout<<"No existe este cliente"<<endl;
+			do {
+				opcionC = menuCuentaCliente();
+				sprintf(sendBuff, "%c", opcionC);
+				send(s, sendBuff, sizeof(sendBuff), 0);
+				switch (opcionC) {
+				case '1':
+					cout << "NOMBRE: ";
+					cin >> nom;
+					cout << "CONTRASENYA: ";
+					cin >> con;
+					sprintf(sendBuff, "%s", nom);
+					send(s, sendBuff, sizeof(sendBuff), 0); //Envio el nombre al servidor
+					sprintf(sendBuff, "%s", con);
+					send(s, sendBuff, sizeof(sendBuff), 0); //Envio la contraseña al servidor
+
+					recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+					sscanf(recvBuff, "%d", &resul);
+					cout << "RESULTADO: " << resul << endl;
+					if (resul == 1) {
+						opcionC2 = menuCliente();
+					} else {
+						cout << "No existe este cliente" << endl;
+					}
+					break;
+				case '2':
+					cout << "NOMBRE: ";
+					cin >> nom;
+					cout << "CONTRASENYA: ";
+					cin >> con;
+					sprintf(sendBuff, "%s", nom);
+					send(s, sendBuff, sizeof(sendBuff), 0); //Envio el nombre al servidor
+					sprintf(sendBuff, "%s", con);
+					send(s, sendBuff, sizeof(sendBuff), 0); //Envio la contraseña al servidor
+
+					recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+					sscanf(recvBuff, "%d", &resul);
+					cout << "RESULTADO: " << resul << endl;
+					if (resul == 1) {
+						cout << "Cliente Registrado Correctamente!" << endl;
+					} else {
+						cout << "Error al crear cliente!" << endl;
+					}
+					break;
+
+				case '0':
+					break;
 				}
-				break;
+
+			} while (opcionC != '0');
+			break;
 		case '0':
 			cout << "AGUR" << endl;
 			break;
 		default:
 			cout << "La opci�n seleccionada no es correcta" << endl;
-			}
+			break;
 		}
-
 	} while (opcion != '0');
 
 	/*ACABA EL PROGRAMA DEL CLIENTE*/
