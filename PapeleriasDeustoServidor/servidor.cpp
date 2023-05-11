@@ -14,15 +14,14 @@ extern "C" {
 #define SERVER_PORT 6000
 using namespace std;
 
-float charToFloat(const char* str)
-{
-    char* end;
-    float result = strtof(str, &end);
-    if (end == str) {
-        // La cadena no contiene un número válido
-        return 0.0;
-    }
-    return result;
+float charToFloat(const char *str) {
+	char *end;
+	float result = strtof(str, &end);
+	if (end == str) {
+		// La cadena no contiene un número válido
+		return 0.0;
+	}
+	return result;
 }
 
 int main(int argc, char *argv[]) {
@@ -149,12 +148,12 @@ int main(int argc, char *argv[]) {
 											sizeof(recvBuff), 0); //Recibe la contrase�a
 									sprintf(codMarcaMaterial, "%s", recvBuff);
 
-
-
-									if (anyadirMaterial(codMat, nomMat,
-											colorMat, precioMaterial,
-											unidadesMaterial, codMarcaMaterial)
-											== 1) {
+									if (comprobacionExiste(codMat, nomMat,
+											colorMat, codMarcaMaterial) == 0) {
+										anyadirMaterial(codMat, nomMat,
+												colorMat, precioMaterial,
+												unidadesMaterial,
+												codMarcaMaterial);
 										resul = 1;
 									} else {
 										resul = 0;
@@ -166,6 +165,19 @@ int main(int argc, char *argv[]) {
 
 									break;
 								case '2':
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0); //Recibe el nombre
+									sprintf(codMat, "%s", recvBuff);
+									if (comprobacionExiste(codMat, 0, 0, 0)
+											== 1) {
+										borrarMaterial(codMat);
+										resul = 1;
+									} else {
+										resul = 0;
+									}
+									sprintf(sendBuff, "%d", resul);
+									send(comm_socket, sendBuff,
+											sizeof(sendBuff), 0);
 									break;
 								case '3':
 									break;

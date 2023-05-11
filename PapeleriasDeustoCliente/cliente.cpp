@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 					send(s, sendBuff, sizeof(sendBuff), 0); //Envio el nombre al servidor
 					sprintf(sendBuff, "%s", con);
 					send(s, sendBuff, sizeof(sendBuff), 0); //Envio la contraseña al servidor
-					cout<<"ENVIO"<<endl;
+					cout << "ENVIO" << endl;
 					recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 					sscanf(recvBuff, "%d", &resul);
 					cout << "RESULTADO: " << resul << endl;
@@ -174,14 +174,32 @@ int main(int argc, char *argv[]) {
 
 								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 								sscanf(recvBuff, "%d", &resul);
-								cout<<"RESULTADO : "<<resul<<endl;
-								if(resul==1){
-									cout<<"Producto añadido correctamente!"<<endl;
-								}else{
-									cout<<"Error al añadir producto"<<endl;
+								cout << "RESULTADO : " << resul << endl;
+								if (resul == 1) {
+									cout << "Producto añadido correctamente!"
+											<< endl;
+								} else {
+									cout << "Error al añadir producto" << endl;
 								}
 								break;
 							case '2':
+								cout
+										<< "INDIQUE EL CODIGO DE MATERIAL PARA ELIMINAR: "
+										<< endl;
+								cin >> codMat;
+
+								sprintf(sendBuff, "%s", codMat);
+								send(s, sendBuff, sizeof(sendBuff), 0);
+
+								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+								sscanf(recvBuff, "%d", &resul);
+								cout << "RESULTADO : " << resul << endl;
+
+								if(resul==1){
+									cout<<"Producto borrado correctamente!"<<endl;
+								}else{
+									cout<<"Error al borrar el producto!"<<endl;
+								}
 								break;
 							case '3':
 								break;
@@ -194,7 +212,7 @@ int main(int argc, char *argv[]) {
 							case '7':
 								break;
 							case '0':
-								cout<<"AGUR"<<endl;
+								cout << "AGUR" << endl;
 								break;
 							}
 						} while (opcionA2 != '0');

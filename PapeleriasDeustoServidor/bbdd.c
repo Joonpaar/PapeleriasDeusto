@@ -181,8 +181,9 @@ int importarPersonas() {
 
 	pf = fopen("Personas.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "[Usuario]\n Nombre: %s\n Contraseña: %s\n Permiso: %i\n ID: %i\n", nombre, contrasenya, &permiso, &id)
-				!= EOF) {
+		while (fscanf(pf,
+				"[Usuario]\n Nombre: %s\n Contraseña: %s\n Permiso: %i\n ID: %i\n",
+				nombre, contrasenya, &permiso, &id) != EOF) {
 			sprintf(sql, "INSERT INTO persona VALUES ('%s', '%s', %i, %i)",
 					nombre, contrasenya, permiso, id);
 			char *errmsg = NULL;
@@ -392,7 +393,11 @@ int borrarMaterial(char *cod_material) {
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 
-	return 0;
+	if (result == SQLITE_DONE) {
+		return 1; // Sentencia ejecutada correctamente
+	} else {
+		return 0; // Error en la ejecución de la sentencia
+	}
 }
 
 int editarNombreMaterial(char *codigo_material, char *nombre) {
@@ -773,8 +778,10 @@ int guardarDatosPersonas() {
 
 	FILE *f = fopen("Personas.txt", "w"); // Abre el archivo para escritura y borra el contenido previo
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
-		fprintf(f, "[Usuario]\n Nombre: %s\n Contraseña: %s\n Permiso: %i\n ID: %i\n", sqlite3_column_text(stmt, 0),
-				sqlite3_column_text(stmt, 1), sqlite3_column_int(stmt, 2), sqlite3_column_int(stmt, 3));
+		fprintf(f,
+				"[Usuario]\n Nombre: %s\n Contraseña: %s\n Permiso: %i\n ID: %i\n",
+				sqlite3_column_text(stmt, 0), sqlite3_column_text(stmt, 1),
+				sqlite3_column_int(stmt, 2), sqlite3_column_int(stmt, 3));
 	}
 	fclose(f);
 
