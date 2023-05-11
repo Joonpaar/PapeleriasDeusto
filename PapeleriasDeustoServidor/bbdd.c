@@ -362,7 +362,7 @@ int anyadirMaterial(char *codigo, char *nombre, char *color, float precio,
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");
 		fflush(stdout);
-		return result;
+		return 0;
 	}
 	sprintf(sql,
 			"INSERT INTO material VALUES ('%s', '%s', '%s', %.2f, %i, '%s')",
@@ -371,7 +371,7 @@ int anyadirMaterial(char *codigo, char *nombre, char *color, float precio,
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 
-	return 0;
+	return 1;
 }
 
 int borrarMaterial(char *cod_material) {

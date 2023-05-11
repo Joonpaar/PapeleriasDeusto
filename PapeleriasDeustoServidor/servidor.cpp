@@ -14,6 +14,17 @@ extern "C" {
 #define SERVER_PORT 6000
 using namespace std;
 
+float charToFloat(const char* str)
+{
+    char* end;
+    float result = strtof(str, &end);
+    if (end == str) {
+        // La cadena no contiene un número válido
+        return 0.0;
+    }
+    return result;
+}
+
 int main(int argc, char *argv[]) {
 
 	WSADATA wsaData;
@@ -84,9 +95,12 @@ int main(int argc, char *argv[]) {
 		/*EMPIEZA EL PROGRAMA DEL SERVIDOR*/
 		crearTablas();
 		importarDatos();
-		char opcion, opcionC, opcionA;
+		char opcion, opcionC, opcionA, opcionA2, opcion2C;
 		char nomC[20], conC[20], nomA[20], conA[20];
-		int resul;
+		char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
+				codMarcaMaterial[10];
+		int resul, unidadesMaterial;
+		float precioMaterial;
 		do {
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 			sscanf(recvBuff, "%c", &opcion);
@@ -103,11 +117,75 @@ int main(int argc, char *argv[]) {
 						sprintf(conA, "%s", recvBuff);
 						if (inicioSesionAdmin(nomA, conA) == 1) {
 							resul = 1;
+							sprintf(sendBuff, "%d", resul);
+							send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+							do {
+								recv(comm_socket, recvBuff, sizeof(recvBuff),
+										0);
+								sscanf(recvBuff, "%c", &opcionA2);
+								switch (opcionA2) {
+								case '1':
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0); //Recibe el nombre
+									sprintf(codMat, "%s", recvBuff);
+
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0); //Recibe la contrase�a
+									sprintf(nomMat, "%s", recvBuff);
+
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0); //Recibe el nombre
+									sprintf(colorMat, "%s", recvBuff);
+
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0); //Recibe la contrase�a
+									sscanf(recvBuff, "%f", &precioMaterial);
+
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0); //Recibe el nombre
+									sscanf(recvBuff, "%i", &unidadesMaterial);
+
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0); //Recibe la contrase�a
+									sprintf(codMarcaMaterial, "%s", recvBuff);
+
+
+
+									if (anyadirMaterial(codMat, nomMat,
+											colorMat, precioMaterial,
+											unidadesMaterial, codMarcaMaterial)
+											== 1) {
+										resul = 1;
+									} else {
+										resul = 0;
+									}
+
+									sprintf(sendBuff, "%d", resul);
+									send(comm_socket, sendBuff,
+											sizeof(sendBuff), 0); //Le env�a al cliente 1,2,0
+
+									break;
+								case '2':
+									break;
+								case '3':
+									break;
+								case '4':
+									break;
+								case '5':
+									break;
+								case '6':
+									break;
+								case '7':
+									break;
+								case '0':
+									break;
+								}
+							} while (opcionA2 != '0');
 						} else {
 							resul = 0;
+							sprintf(sendBuff, "%d", resul);
+							send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 						}
-						sprintf(sendBuff, "%d", resul);
-						send(comm_socket, sendBuff, sizeof(sendBuff), 0); //Le env�a al cliente 1,2,0
 						break;
 					case '2':
 						recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //Recibe el nombre
