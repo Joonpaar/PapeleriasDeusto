@@ -245,6 +245,19 @@ int main(int argc, char *argv[]) {
 														sizeof(sendBuff), 0);
 												break;
 											case '4':
+												recv(comm_socket, recvBuff,
+														sizeof(recvBuff), 0); //Recibe la contrase�a
+												sscanf(recvBuff, "%i",
+														&unidadesMaterial);
+												if (editarUnidadesMaterial(codMat,
+														unidadesMaterial) == 1) {
+													resul = 1;
+												} else {
+													resul = 0;
+												}
+												sprintf(sendBuff, "%d", resul);
+												send(comm_socket, sendBuff,
+														sizeof(sendBuff), 0);
 												break;
 											case '0':
 												break;

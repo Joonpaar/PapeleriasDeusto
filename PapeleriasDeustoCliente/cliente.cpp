@@ -293,11 +293,31 @@ int main(int argc, char *argv[]) {
 														<< endl;
 											} else {
 												cout
-														<< "Precio del material editado correctamente!"
+														<< "Error al editar el precio!"
 														<< endl;
 											}
 											break;
 										case '4':
+											cout << "UNIDADES: ";
+											cin >> unidadesMaterial;
+											sprintf(sendBuff, "%i",
+													unidadesMaterial);
+											send(s, sendBuff, sizeof(sendBuff),
+													0);
+
+											recv(s, recvBuff, sizeof(recvBuff),
+													0); //Recibe el resultado del Inicio de Sesion
+											sscanf(recvBuff, "%d", &resul);
+
+											if (resul == 1) {
+												cout
+														<< "Unidades del material editadas correctamente!"
+														<< endl;
+											} else {
+												cout
+														<< "Error al editar las unidades!"
+														<< endl;
+											}
 											break;
 										case '0':
 											break;

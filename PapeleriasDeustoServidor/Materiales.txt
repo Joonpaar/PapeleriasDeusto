@@ -1,3 +1,3 @@
 10A Boli Azul 0.500000 300 000A
 20B Subrayador Naranja 1.000000 200 111B
-A Movil Rojo 12.600000 1 000A
+A Movil Rojo 12.600000 250 000A
