@@ -194,48 +194,64 @@ int main(int argc, char *argv[]) {
 									send(comm_socket, sendBuff,
 											sizeof(sendBuff), 0); //manda el resul
 
-									do {
-										recv(comm_socket, recvBuff,
-												sizeof(recvBuff), 0);
-										sscanf(recvBuff, "%c", &opcionA3);
-										switch (opcionA3) {
-										case '1':
+									if (resul == 1) {
+										do {
 											recv(comm_socket, recvBuff,
 													sizeof(recvBuff), 0);
-											sprintf(nomMat, "%s", recvBuff);
-											if (editarNombreMaterial(codMat,
-													nomMat) == 1) {
-												resul = 1;
-											} else {
-												resul = 0;
+											sscanf(recvBuff, "%c", &opcionA3);
+											switch (opcionA3) {
+											case '1':
+												recv(comm_socket, recvBuff,
+														sizeof(recvBuff), 0);
+												sprintf(nomMat, "%s", recvBuff);
+												if (editarNombreMaterial(codMat,
+														nomMat) == 1) {
+													resul = 1;
+												} else {
+													resul = 0;
+												}
+												sprintf(sendBuff, "%d", resul);
+												send(comm_socket, sendBuff,
+														sizeof(sendBuff), 0);
+												break;
+											case '2':
+												recv(comm_socket, recvBuff,
+														sizeof(recvBuff), 0);
+												sprintf(colorMat, "%s",
+														recvBuff);
+												if (editarColorMaterial(codMat,
+														colorMat) == 1) {
+													resul = 1;
+												} else {
+													resul = 0;
+												}
+												sprintf(sendBuff, "%d", resul);
+												send(comm_socket, sendBuff,
+														sizeof(sendBuff), 0);
+												break;
+											case '3':
+												recv(comm_socket, recvBuff,
+														sizeof(recvBuff), 0); //Recibe la contrase�a
+												sscanf(recvBuff, "%f",
+														&precioMaterial);
+												if (editarPrecioMaterial(codMat,
+														precioMaterial) == 1) {
+													resul = 1;
+												} else {
+													resul = 0;
+												}
+												sprintf(sendBuff, "%d", resul);
+												send(comm_socket, sendBuff,
+														sizeof(sendBuff), 0);
+												break;
+											case '4':
+												break;
+											case '0':
+												break;
 											}
-											sprintf(sendBuff, "%d", resul);
-											send(comm_socket, sendBuff,
-													sizeof(sendBuff), 0);
-											break;
-										case '2':
-											recv(comm_socket, recvBuff,
-													sizeof(recvBuff), 0);
-											sprintf(colorMat, "%s", recvBuff);
-											if (editarColorMaterial(codMat,
-													colorMat) == 1) {
-												resul = 1;
-											} else {
-												resul = 0;
-											}
-											sprintf(sendBuff, "%d", resul);
-											send(comm_socket, sendBuff,
-													sizeof(sendBuff), 0);
-											break;
-										case '3':
-											break;
-										case '4':
-											break;
-										case '0':
-											break;
-										}
-									} while (opcionA3 != '0');
-									break;
+										} while (opcionA3 != '0');
+										break;
+									}
 								case '4':
 									break;
 								case '5':

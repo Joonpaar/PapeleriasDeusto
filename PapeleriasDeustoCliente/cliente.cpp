@@ -276,6 +276,26 @@ int main(int argc, char *argv[]) {
 											}
 											break;
 										case '3':
+											cout << "PRECIO: ";
+											cin >> precioMat;
+											sprintf(sendBuff, "%.2f",
+													precioMat);
+											send(s, sendBuff, sizeof(sendBuff),
+													0);
+
+											recv(s, recvBuff, sizeof(recvBuff),
+													0); //Recibe el resultado del Inicio de Sesion
+											sscanf(recvBuff, "%d", &resul);
+
+											if (resul == 1) {
+												cout
+														<< "Precio del material editado correctamente!"
+														<< endl;
+											} else {
+												cout
+														<< "Precio del material editado correctamente!"
+														<< endl;
+											}
 											break;
 										case '4':
 											break;
