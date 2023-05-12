@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 		/*EMPIEZA EL PROGRAMA DEL SERVIDOR*/
 		crearTablas();
 		importarDatos();
-		char opcion, opcionC, opcionA, opcionA2, opcion2C;
+		char opcion, opcionC, opcionA, opcionA2, opcion2C, opcionA3;
 		char nomC[20], conC[20], nomA[20], conA[20];
 		char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
 				codMarcaMaterial[10];
@@ -180,6 +180,61 @@ int main(int argc, char *argv[]) {
 											sizeof(sendBuff), 0);
 									break;
 								case '3':
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0);
+									sprintf(codMat, "%s", recvBuff);
+
+									if (comprobacionExiste(codMat, 0, 0, 0)
+											== 1) {
+										resul = 1;
+									} else {
+										resul = 0;
+									}
+									sprintf(sendBuff, "%d", resul);
+									send(comm_socket, sendBuff,
+											sizeof(sendBuff), 0); //manda el resul
+
+									do {
+										recv(comm_socket, recvBuff,
+												sizeof(recvBuff), 0);
+										sscanf(recvBuff, "%c", &opcionA3);
+										switch (opcionA3) {
+										case '1':
+											recv(comm_socket, recvBuff,
+													sizeof(recvBuff), 0);
+											sprintf(nomMat, "%s", recvBuff);
+											if (editarNombreMaterial(codMat,
+													nomMat) == 1) {
+												resul = 1;
+											} else {
+												resul = 0;
+											}
+											sprintf(sendBuff, "%d", resul);
+											send(comm_socket, sendBuff,
+													sizeof(sendBuff), 0);
+											break;
+										case '2':
+											recv(comm_socket, recvBuff,
+													sizeof(recvBuff), 0);
+											sprintf(colorMat, "%s", recvBuff);
+											if (editarColorMaterial(codMat,
+													colorMat) == 1) {
+												resul = 1;
+											} else {
+												resul = 0;
+											}
+											sprintf(sendBuff, "%d", resul);
+											send(comm_socket, sendBuff,
+													sizeof(sendBuff), 0);
+											break;
+										case '3':
+											break;
+										case '4':
+											break;
+										case '0':
+											break;
+										}
+									} while (opcionA3 != '0');
 									break;
 								case '4':
 									break;

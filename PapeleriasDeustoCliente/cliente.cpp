@@ -54,6 +54,20 @@ char menuAdministrador() {
 	cin >> opcion;
 	return opcion;
 }
+
+char menuModificarMaterial() {
+	char opcion;
+	cout << "QUE CARACTERISTICA DESEA MODIFICAR?" << endl;
+	cout << "1. NOMBRE" << endl;
+	cout << "2. COLOR" << endl;
+	cout << "3. PRECIO" << endl;
+	cout << "4. UNIDADES" << endl;
+	cout << "0. ATRAS" << endl;
+	cout << "Elige opcion: " << endl;
+	cin >> opcion;
+	return opcion;
+}
+
 char menuCliente() {
 	char opcion;
 	cout << "MENU CLIENTE" << endl;
@@ -110,7 +124,7 @@ int main(int argc, char *argv[]) {
 			ntohs(server.sin_port));
 
 	/*EMPIEZA EL PROGRAMA DEL CLIENTE*/
-	char opcion, opcionA, opcionC, opcionC2, opcionA2;
+	char opcion, opcionA, opcionC, opcionC2, opcionA2, opcionA3;
 	char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
 			codMarcaMaterial[10];
 	int resul, unidadesMaterial;
@@ -195,13 +209,83 @@ int main(int argc, char *argv[]) {
 								sscanf(recvBuff, "%d", &resul);
 								cout << "RESULTADO : " << resul << endl;
 
-								if(resul==1){
-									cout<<"Producto borrado correctamente!"<<endl;
-								}else{
-									cout<<"Error al borrar el producto!"<<endl;
+								if (resul == 1) {
+									cout << "Producto borrado correctamente!"
+											<< endl;
+								} else {
+									cout << "Error al borrar el producto!"
+											<< endl;
 								}
 								break;
 							case '3':
+								cout
+										<< "INDIQUE EL CODIGO DEL MATERIAL QUE DESEA EDITAR: "
+										<< endl;
+								cin >> codMat;
+								sprintf(sendBuff, "%s", codMat);
+								send(s, sendBuff, sizeof(sendBuff), 0);
+
+								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado
+								sscanf(recvBuff, "%d", &resul);
+								if (resul == 1) {
+									do {
+										opcionA3 = menuModificarMaterial();
+										sprintf(sendBuff, "%c", opcionA3);
+										send(s, sendBuff, sizeof(sendBuff), 0);
+										switch (opcionA3) {
+										case '1':
+											cout << "NOMBRE: ";
+											cin >> nomMat;
+											sprintf(sendBuff, "%s", nomMat);
+											send(s, sendBuff, sizeof(sendBuff),
+													0);
+
+											recv(s, recvBuff, sizeof(recvBuff),
+													0); //Recibe el resultado del Inicio de Sesion
+											sscanf(recvBuff, "%d", &resul);
+											cout << resul << endl;
+											if (resul == 1) {
+												cout
+														<< "Nombre del material editado correctamente!"
+														<< endl;
+											} else {
+												cout
+														<< "Error al editar el nombre!"
+														<< endl;
+											}
+											break;
+										case '2':
+											cout << "COLOR: ";
+											cin >> colorMat;
+											sprintf(sendBuff, "%s", colorMat);
+											send(s, sendBuff, sizeof(sendBuff),
+													0);
+
+											recv(s, recvBuff, sizeof(recvBuff),
+													0); //Recibe el resultado del Inicio de Sesion
+											sscanf(recvBuff, "%d", &resul);
+											cout << resul << endl;
+											if (resul == 1) {
+												cout
+														<< "Color del material editado correctamente!"
+														<< endl;
+											} else {
+												cout
+														<< "Error al editar el color!"
+														<< endl;
+											}
+											break;
+										case '3':
+											break;
+										case '4':
+											break;
+										case '0':
+											break;
+										}
+									} while (opcionA3 != '0');
+								} else {
+									cout << "Material no existente!" << endl;
+								}
 								break;
 							case '4':
 								break;

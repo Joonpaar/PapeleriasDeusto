@@ -417,9 +417,14 @@ int editarNombreMaterial(char *codigo_material, char *nombre) {
 			nombre, codigo_material);
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
+	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 
-	return 0;
+	if (result == SQLITE_DONE) {
+		return 1; // Sentencia ejecutada correctamente
+	} else {
+		return 0; // Error en la ejecución de la sentencia
+	}
 }
 
 int editarColorMaterial(char *codigo_material, char *color) {
@@ -438,9 +443,14 @@ int editarColorMaterial(char *codigo_material, char *color) {
 			color, codigo_material);
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
+	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 
-	return 0;
+	if (result == SQLITE_DONE) {
+		return 1; // Sentencia ejecutada correctamente
+	} else {
+		return 0; // Error en la ejecución de la sentencia
+	}
 }
 
 int editarPrecioMaterial(char *codigo_material, float precio) {
@@ -460,9 +470,14 @@ int editarPrecioMaterial(char *codigo_material, float precio) {
 			precio, codigo_material);
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
+	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 
-	return 0;
+	if (result == SQLITE_DONE) {
+		return 1; // Sentencia ejecutada correctamente
+	} else {
+		return 0; // Error en la ejecución de la sentencia
+	}
 }
 
 int editarUnidadesMaterial(char *codigo_material, int unidades) {
@@ -482,9 +497,14 @@ int editarUnidadesMaterial(char *codigo_material, int unidades) {
 			unidades, codigo_material);
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
+	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 
-	return 0;
+	if (result == SQLITE_DONE) {
+		return 1; // Sentencia ejecutada correctamente
+	} else {
+		return 0; // Error en la ejecución de la sentencia
+	}
 }
 
 int verMateriales() {
