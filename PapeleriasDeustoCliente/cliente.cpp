@@ -9,6 +9,7 @@ using namespace std;
 
 char menu() {
 	char opcion;
+	cout<<""<<endl;
 	cout << "1. Admin" << endl;
 	cout << "2. Cliente" << endl;
 	cout << "0. Salir" << endl;
@@ -19,6 +20,7 @@ char menu() {
 
 char menuCuentaCliente() {
 	char opcion;
+	cout<<""<<endl;
 	cout << "CLIENTE" << endl;
 	cout << "1. INICIAR SESION" << endl;
 	cout << "2. REGISTRARSE" << endl;
@@ -30,6 +32,7 @@ char menuCuentaCliente() {
 
 char menuCuentaAdmin() {
 	char opcion;
+	cout<<""<<endl;
 	cout << "ADMIN" << endl;
 	cout << "1. INICIAR SESION" << endl;
 	cout << "2. REGISTRARSE" << endl;
@@ -41,6 +44,7 @@ char menuCuentaAdmin() {
 
 char menuAdministrador() {
 	char opcion;
+	cout<<""<<endl;
 	cout << "MENU ADMINISRADOR" << endl;
 	cout << "1. AÑADIR MATERIAL" << endl;
 	cout << "2. ELIMINAR MATERIAL" << endl;
@@ -57,6 +61,7 @@ char menuAdministrador() {
 
 char menuModificarMaterial() {
 	char opcion;
+	cout<<""<<endl;
 	cout << "QUE CARACTERISTICA DESEA MODIFICAR?" << endl;
 	cout << "1. NOMBRE" << endl;
 	cout << "2. COLOR" << endl;
@@ -70,6 +75,7 @@ char menuModificarMaterial() {
 
 char menuCliente() {
 	char opcion;
+	cout<<""<<endl;
 	cout << "MENU CLIENTE" << endl;
 	cout << "1. COMPRAR" << endl;
 	cout << "2. HISTORIAL" << endl;
@@ -320,6 +326,7 @@ int main(int argc, char *argv[]) {
 											}
 											break;
 										case '0':
+											cout<<"Saliendo del menu de edicion"<<endl;
 											break;
 										}
 									} while (opcionA3 != '0');
