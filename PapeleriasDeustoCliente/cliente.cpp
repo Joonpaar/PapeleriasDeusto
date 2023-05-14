@@ -9,7 +9,7 @@ using namespace std;
 
 char menu() {
 	char opcion;
-	cout<<""<<endl;
+	cout << "" << endl;
 	cout << "1. Admin" << endl;
 	cout << "2. Cliente" << endl;
 	cout << "0. Salir" << endl;
@@ -20,7 +20,7 @@ char menu() {
 
 char menuCuentaCliente() {
 	char opcion;
-	cout<<""<<endl;
+	cout << "" << endl;
 	cout << "CLIENTE" << endl;
 	cout << "1. INICIAR SESION" << endl;
 	cout << "2. REGISTRARSE" << endl;
@@ -32,7 +32,7 @@ char menuCuentaCliente() {
 
 char menuCuentaAdmin() {
 	char opcion;
-	cout<<""<<endl;
+	cout << "" << endl;
 	cout << "ADMIN" << endl;
 	cout << "1. INICIAR SESION" << endl;
 	cout << "2. REGISTRARSE" << endl;
@@ -44,7 +44,7 @@ char menuCuentaAdmin() {
 
 char menuAdministrador() {
 	char opcion;
-	cout<<""<<endl;
+	cout << "" << endl;
 	cout << "MENU ADMINISRADOR" << endl;
 	cout << "1. AÑADIR MATERIAL" << endl;
 	cout << "2. ELIMINAR MATERIAL" << endl;
@@ -61,7 +61,7 @@ char menuAdministrador() {
 
 char menuModificarMaterial() {
 	char opcion;
-	cout<<""<<endl;
+	cout << "" << endl;
 	cout << "QUE CARACTERISTICA DESEA MODIFICAR?" << endl;
 	cout << "1. NOMBRE" << endl;
 	cout << "2. COLOR" << endl;
@@ -75,7 +75,7 @@ char menuModificarMaterial() {
 
 char menuCliente() {
 	char opcion;
-	cout<<""<<endl;
+	cout << "" << endl;
 	cout << "MENU CLIENTE" << endl;
 	cout << "1. COMPRAR" << endl;
 	cout << "2. HISTORIAL" << endl;
@@ -326,7 +326,9 @@ int main(int argc, char *argv[]) {
 											}
 											break;
 										case '0':
-											cout<<"Saliendo del menu de edicion"<<endl;
+											cout
+													<< "Saliendo del menu de edicion"
+													<< endl;
 											break;
 										}
 									} while (opcionA3 != '0');
@@ -397,7 +399,48 @@ int main(int argc, char *argv[]) {
 					sscanf(recvBuff, "%d", &resul);
 					cout << "RESULTADO: " << resul << endl;
 					if (resul == 1) {
-						opcionC2 = menuCliente();
+						do {
+							opcionC2 = menuCliente();
+							sprintf(sendBuff, "%c", opcionC2);
+							send(s, sendBuff, sizeof(sendBuff), 0);
+							switch (opcionC2) {
+							case '1':
+								cout
+										<< "INDIQUE EL CODIGO DEL MATERIAL QUE DESEA COMPRAR: "
+										<< endl;
+								cin >> codMat;
+								sprintf(sendBuff, "%s", codMat);
+								send(s, sendBuff, sizeof(sendBuff), 0);
+
+								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+								sscanf(recvBuff, "%d", &resul);
+								cout<<"RESULTADO: "<<resul<<endl;
+								if (resul == 1) {
+									cout
+											<< "INDIQUE LA CANTIDAD A COMPRAR DEL MATERIAL "
+											<< codMat << ": " << endl;
+									cin >> unidadesMaterial;
+									sprintf(sendBuff, "%i", unidadesMaterial);
+									send(s, sendBuff, sizeof(sendBuff), 0);
+
+									recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+									sscanf(recvBuff, "%d", &resul);
+
+									if(resul == 1){
+										cout<<"Material comprado correctamente"<<endl;
+									}else{
+										cout<<"Error al comprar material"<<endl;
+									}
+								}
+								break;
+							case '2':
+								break;
+							case '3':
+								break;
+							case '0':
+								cout << "Agur" << endl;
+							}
+						} while (opcionC2 != '0');
 					} else {
 						cout << "No existe este cliente" << endl;
 					}

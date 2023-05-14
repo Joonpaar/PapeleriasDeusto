@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include "sqlite3.h"
 
 //CREACION DE TABLAS Y FUNCIONES DE MENU
@@ -527,9 +528,10 @@ int verMateriales() {
 		precio = (float) sqlite3_column_double(stmt, 3);
 		unidades = sqlite3_column_int(stmt, 4);
 		sprintf(cod_marca, "%s", (char*) sqlite3_column_text(stmt, 5));
-		printf(
-				"MATERIAL: %s - NOMBRE: %s - COLOR: %s - PRECIO: %.2f - UNIDADES: %i - MARCA: %s\n",
-				cod_material, nombre, color, precio, unidades, cod_marca);
+		/*printf(
+		 "MATERIAL: %s - NOMBRE: %s - COLOR: %s - PRECIO: %.2f - UNIDADES: %i - MARCA: %s\n",
+		 cod_material, nombre, color, precio, unidades, cod_marca);*/
+
 		result = sqlite3_step(stmt); //Ejecutar la sentencia
 	}
 	sqlite3_finalize(stmt); //Cerrar la sentencia
@@ -568,6 +570,31 @@ int verCompras() {
 
 }
 
+int anyadirCompra(char *nombrePersona, char *codigoMat, int cantidad,
+		float importe) {
+	sqlite3 *db;
+	sqlite3_stmt *stmt;
+	int result;
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	long ticket = (tv.tv_sec * 1000LL) + (tv.tv_usec / 1000LL);
+	char sql[200];
+	//Establecer la conexión con la bb
+	result = sqlite3_open("Datos.sqlite", &db);
+	if (result != SQLITE_OK) {
+		printf("Error al abrir la BBDD\n");
+		fflush(stdout);
+		return 0;
+	}
+	sprintf(sql, "INSERT INTO compra VALUES ('%ld', '%s', '%s', %i, %.2f)",
+			ticket, nombrePersona, codigoMat, cantidad, importe);
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+	sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
+
+	return 1;
+}
+
 int crearTablas() {
 	crearTablaMarca();
 	crearTablaMateriales();
@@ -591,7 +618,7 @@ int borrarDatosMateriales() {
 	sqlite3_stmt *stmt;
 	int result;
 	char sql[200];
-	//Establecer la conexión con la bb
+//Establecer la conexión con la bb
 	result = sqlite3_open("Datos.sqlite", &db);
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");
@@ -611,7 +638,7 @@ int borrarDatosCompras() {
 	sqlite3_stmt *stmt;
 	int result;
 	char sql[200];
-	//Establecer la conexión con la bb
+//Establecer la conexión con la bb
 	result = sqlite3_open("Datos.sqlite", &db);
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");
@@ -631,7 +658,7 @@ int borrarDatosPersonas() {
 	sqlite3_stmt *stmt;
 	int result;
 	char sql[200];
-	//Establecer la conexión con la bb
+//Establecer la conexión con la bb
 	result = sqlite3_open("Datos.sqlite", &db);
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");
@@ -651,7 +678,7 @@ int borrarDatosMarca() {
 	sqlite3_stmt *stmt;
 	int result;
 	char sql[200];
-	//Establecer la conexión con la bb
+//Establecer la conexión con la bb
 	result = sqlite3_open("Datos.sqlite", &db);
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");
@@ -685,6 +712,33 @@ int comprobacionExiste(char *codigo, char *nombre, char *color,
 	sprintf(sql,
 			"SELECT * FROM material WHERE cod_material = '%s' OR nombre_material = '%s' AND color = '%s' AND cod_marca = '%s'",
 			codigo, nombre, color, codigoMarca);
+	result = sqlite3_open("Datos.sqlite", &db);
+
+	if (result != SQLITE_OK) {
+		fprintf(stderr, "No se pudo abrir la base de datos: %s\n",
+				sqlite3_errmsg(db));
+		sqlite3_close(db);
+		return -1;
+	}
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	if (result == SQLITE_ROW) {
+		sqlite3_finalize(stmt); //Cerrar la sentencia
+		sqlite3_close(db);
+		return 1; //EXISTE
+	}
+	return 0; //NO EXISTE
+
+}
+
+int comprobacionUnidadesExisten(char *codigo, int unidades) {
+	sqlite3 *db;
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result;
+	sprintf(sql,
+			"select * from material where cod_material = '%s' AND UNIDADES>= %i",
+			codigo, unidades);
 	result = sqlite3_open("Datos.sqlite", &db);
 
 	if (result != SQLITE_OK) {
@@ -779,6 +833,62 @@ int datosMarcasExisten() {
 
 }
 
+int conseguirUnidadesDelMaterial(char *codigo) {
+	sqlite3 *db;
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result;
+	int unidades;
+	sprintf(sql, "SELECT unidades FROM material WHERE cod_material = '%s'",
+			codigo);
+	result = sqlite3_open("Datos.sqlite", &db);
+
+	if (result != SQLITE_OK) {
+		fprintf(stderr, "No se pudo abrir la base de datos: %s\n",
+				sqlite3_errmsg(db));
+		sqlite3_close(db);
+		return -1;
+	}
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	if (result == SQLITE_ROW) {
+		unidades = sqlite3_column_int(stmt, 0);
+		sqlite3_finalize(stmt); //Cerrar la sentencia
+		sqlite3_close(db);
+
+		return unidades;
+	}
+	return 0;
+}
+
+float conseguirPrecioMaterial(char *codigoMat) {
+	sqlite3 *db;
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result;
+	float precio;
+	sprintf(sql, "SELECT precio FROM material WHERE cod_material = '%s'",
+			codigoMat);
+	result = sqlite3_open("Datos.sqlite", &db);
+
+	if (result != SQLITE_OK) {
+		fprintf(stderr, "No se pudo abrir la base de datos: %s\n",
+				sqlite3_errmsg(db));
+		sqlite3_close(db);
+		return -1;
+	}
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	if (result == SQLITE_ROW) {
+		precio = sqlite3_column_double(stmt, 0);
+		sqlite3_finalize(stmt); //Cerrar la sentencia
+		sqlite3_close(db);
+
+		return precio;
+	}
+	return 0;
+}
+
 //GUARDADO
 
 int guardarDatosPersonas() {
@@ -786,7 +896,7 @@ int guardarDatosPersonas() {
 	sqlite3_stmt *stmt;
 	int result;
 	char sql[200];
-	//Establecer la conexión con la bb
+//Establecer la conexión con la bb
 	result = sqlite3_open("Datos.sqlite", &db);
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");
@@ -816,7 +926,7 @@ int guardarDatosMateriales() {
 	sqlite3_stmt *stmt;
 	int result;
 	char sql[200];
-	//Establecer la conexión con la bb
+//Establecer la conexión con la bb
 	result = sqlite3_open("Datos.sqlite", &db);
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");
@@ -846,7 +956,7 @@ int guardarDatosCompras() {
 	sqlite3_stmt *stmt;
 	int result;
 	char sql[200];
-	//Establecer la conexión con la bb
+//Establecer la conexión con la bb
 	result = sqlite3_open("Datos.sqlite", &db);
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");

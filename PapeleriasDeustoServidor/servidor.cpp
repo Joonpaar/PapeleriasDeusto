@@ -249,8 +249,10 @@ int main(int argc, char *argv[]) {
 														sizeof(recvBuff), 0); //Recibe la contrase�a
 												sscanf(recvBuff, "%i",
 														&unidadesMaterial);
-												if (editarUnidadesMaterial(codMat,
-														unidadesMaterial) == 1) {
+												if (editarUnidadesMaterial(
+														codMat,
+														unidadesMaterial)
+														== 1) {
 													resul = 1;
 												} else {
 													resul = 0;
@@ -322,6 +324,57 @@ int main(int argc, char *argv[]) {
 						}
 						sprintf(sendBuff, "%d", resul);
 						send(comm_socket, sendBuff, sizeof(sendBuff), 0); //Le env�a al cliente 1,2,0
+						if (resul == 1) {
+							do {
+								recv(comm_socket, recvBuff, sizeof(recvBuff),
+										0);
+								sscanf(recvBuff, "%c", &opcion2C);
+								switch (opcion2C) {
+								case '1':
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0);
+									sscanf(recvBuff, "%s", codMat);
+									if (comprobacionExiste(codMat, 0, 0, 0)
+											== 1) {
+										resul = 1;
+									} else {
+										resul = 0;
+									}
+									sprintf(sendBuff, "%d", resul);
+									send(comm_socket, sendBuff,
+											sizeof(sendBuff), 0);
+
+									if (resul == 1) {
+										recv(comm_socket, recvBuff,
+												sizeof(recvBuff), 0); //Recibe el nombre
+										sscanf(recvBuff, "%i",
+												&unidadesMaterial);
+										if (comprobacionUnidadesExisten(codMat,
+												unidadesMaterial) == 1) {
+											resul = 1;
+											int unidadesAntiguas = conseguirUnidadesDelMaterial(codMat);
+											int unidadesNuevas = unidadesAntiguas-unidadesMaterial;
+											editarUnidadesMaterial(codMat, unidadesNuevas);
+											float precio = conseguirPrecioMaterial(codMat);
+											float precioAPagar = precio * unidadesMaterial;
+											anyadirCompra(nomC, codMat, unidadesMaterial, precioAPagar);
+										} else {
+											resul = 0;
+										}
+										sprintf(sendBuff, "%d", resul);
+										send(comm_socket, sendBuff,
+												sizeof(sendBuff), 0);
+									}
+									break;
+								case '2':
+									break;
+								case '3':
+									break;
+								case '0':
+									break;
+								}
+							} while (opcion2C != '0');
+						}
 						break;
 					case '2':
 						recv(comm_socket, recvBuff, sizeof(recvBuff), 0); //Recibe el nombre

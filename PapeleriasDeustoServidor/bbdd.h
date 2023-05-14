@@ -24,6 +24,11 @@ int verMateriales();
 int verCompras();
 int verMarcas();
 
+//MENU CLIENTE
+int conseguirUnidadesDelMaterial(char* codigo);
+int anyadirCompra(char* nombrePersona, char* codigoMat, int cantidad, float importe);
+float conseguirPrecioMaterial(char *codigoMat);
+
 //DATOS
 int importarMarcas();
 int importarCompras();
@@ -40,6 +45,7 @@ int borrarDatosTablas();
 
 //COMPROBACIONES EN TABLAS
 int comprobacionExiste(char *codigo, char *nombre, char *color, char *codigoMarca);
+int comprobacionUnidadesExisten(char *codigo, int unidades);
 int datosMaterialesExisten();
 int datosComprasExisten();
 int datosMarcasExisten();
