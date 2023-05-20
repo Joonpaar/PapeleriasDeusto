@@ -15,22 +15,22 @@ Material::Material(int unidades, char *cod, char *nom, float precio,
 		char *color, const Marca &m) {
 	this->unidades = unidades;
 	this->codigo = new char[strlen(cod) + 1];
-	this->codigo = cod;
+	strcpy(this->codigo , cod);
 	this->nom = new char[strlen(nom) + 1];
-	this->nom = nom;
+	strcpy(this->nom , nom);
 	this->precio = precio;
 	this->color = new char[strlen(color) + 1];
-	this->color = color;
+	strcpy(this->color , color);
 	this->m = m;
 }
 
-void Material::verMaterial(const Material &m) {
-	cout << "CODIGO: " << m.codigo << endl;
-	cout << "NOMBRE: " << m.nom << endl;
-	cout << "COLOR: " << m.color << endl;
-	cout << "PRECIO: " << m.precio << endl;
-	cout << "MARCA: " << m.m.getNom() << endl;
-	cout << "UNIDADES: " << m.unidades << endl;
+void Material::verMaterial() {
+	cout << "CODIGO: " << codigo << endl;
+	cout << "NOMBRE: " << nom << endl;
+	cout << "COLOR: " << color << endl;
+	cout << "PRECIO: " << precio << endl;
+	cout << "MARCA: " << m.getNom() << endl;
+	cout << "UNIDADES: " << unidades << endl;
 }
 
 char* Material::getCodigo() const {

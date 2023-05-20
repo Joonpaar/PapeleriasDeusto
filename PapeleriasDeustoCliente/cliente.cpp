@@ -3,9 +3,18 @@
 #include <stdio.h>
 #include <winsock2.h>
 #include <iostream>
+#include "Material.h"
+#include "Compra.h"
+
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 6000
 using namespace std;
+using namespace containerMaterialCliente;
+
+void quitarSalto(char *cad) { //PORQUE SINO EL fgets COGE TAMBIEN EL \n COMO CARACTER
+	if (cad[strlen(cad) - 1] == '\n')
+		cad[strlen(cad) - 1] = '\0';
+}
 
 char menu() {
 	char opcion;
@@ -132,7 +141,7 @@ int main(int argc, char *argv[]) {
 	/*EMPIEZA EL PROGRAMA DEL CLIENTE*/
 	char opcion, opcionA, opcionC, opcionC2, opcionA2, opcionA3;
 	char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
-			codMarcaMaterial[10];
+			codMarcaMaterial[10], nomMarca[10];
 	int resul, unidadesMaterial;
 	float precioMat;
 	do {
@@ -337,8 +346,35 @@ int main(int argc, char *argv[]) {
 								}
 								break;
 							case '4':
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								while (strcmp(recvBuff, "FIN") != 0) {
+									sscanf(recvBuff, "%s %s %s %f %i %s %s",
+											codMat, nomMat, colorMat,
+											&precioMat, &unidadesMaterial,
+											codMarcaMaterial,nomMarca);
+									cout<<codMat<<endl;
+									cout<<nomMat<<endl;
+									cout<<colorMat<<endl;
+									cout<<precioMat<<endl;
+									cout<<unidadesMaterial<<endl;
+									cout<<codMarcaMaterial<<endl;
+									cout<<nomMarca<<endl;
+
+									Marca marca = Marca(nomMarca, codMarcaMaterial);
+									Material mat = Material(unidadesMaterial, codMat, nomMat, precioMat, colorMat, marca);
+									mat.verMaterial();
+									recv(s, recvBuff, sizeof(recvBuff), 0);
+									cout<<"++++++++++++++++++++"<<endl;
+
+								}
 								break;
 							case '5':
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								while (strcmp(recvBuff, "FIN") != 0) {
+									printf("%s\n", recvBuff);
+									recv(s, recvBuff, sizeof(recvBuff), 0);
+
+								}
 								break;
 							case '6':
 								break;
@@ -414,7 +450,7 @@ int main(int argc, char *argv[]) {
 
 								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 								sscanf(recvBuff, "%d", &resul);
-								cout<<"RESULTADO: "<<resul<<endl;
+								cout << "RESULTADO: " << resul << endl;
 								if (resul == 1) {
 									cout
 											<< "INDIQUE LA CANTIDAD A COMPRAR DEL MATERIAL "
@@ -426,10 +462,13 @@ int main(int argc, char *argv[]) {
 									recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 									sscanf(recvBuff, "%d", &resul);
 
-									if(resul == 1){
-										cout<<"Material comprado correctamente"<<endl;
-									}else{
-										cout<<"Error al comprar material"<<endl;
+									if (resul == 1) {
+										cout
+												<< "Material comprado correctamente"
+												<< endl;
+									} else {
+										cout << "Error al comprar material"
+												<< endl;
 									}
 								}
 								break;

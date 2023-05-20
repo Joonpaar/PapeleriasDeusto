@@ -11,7 +11,7 @@ public:
 	Marca();
 	Marca(char *nom, char *cod);
 	int anyadirMarca(std::list<Marca> &listaMarca, const Marca &m);
-	void verMarca(const Marca &m);
+	void verMarca();
 	virtual ~Marca();
 	char* getCod() const;
 	void setCod(char *cod);

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include "sqlite3.h"
-
 //CREACION DE TABLAS Y FUNCIONES DE MENU
 
 int crearTablaMarca() {
@@ -30,12 +29,25 @@ int crearTablaMarca() {
 	sqlite3_close(db);
 	return 0;
 }
-
+void cargarMarcas(char marcas[][50]) {
+	FILE *pf;
+	char *codigo = malloc(sizeof(char) * 20);
+	char *nombre = malloc(sizeof(char) * 20);
+	int i = 0;
+	pf = fopen("Marcas.txt", "r");
+	if (pf != (FILE*) NULL) {
+		while (fscanf(pf, "%s %s", codigo, nombre) != EOF) {
+			sprintf(marcas[i],"%s %s", codigo, nombre);
+			i++;
+		}
+		fclose(pf);
+	}
+}
 int importarMarcas() {
 	FILE *pf;
 	char *codigo = malloc(sizeof(char) * 20);
 	char *nombre = malloc(sizeof(char) * 20);
-
+	int i = 0;
 	char sql[200];
 	sqlite3 *db;
 	int rc = sqlite3_open("Datos.sqlite", &db);
@@ -69,6 +81,7 @@ int importarMarcas() {
 	return 0;
 
 }
+
 
 int crearTablaMateriales() {
 	sqlite3 *db;
@@ -508,16 +521,20 @@ int editarUnidadesMaterial(char *codigo_material, int unidades) {
 	}
 }
 
-int verMateriales() {
+int verMateriales(SOCKET comm_socket) {
+	char sendBuff[512];
 	sqlite3 *db;
-	sqlite3_stmt *stmt;
-	char sql[200];
-	int result;
-	char cod_material[10], nombre[20], color[20], cod_marca[10];
+	sqlite3_stmt *stmt, *stmt2;
+	char sql[200], sql2[200];
+	int result, result2;
+	char *nomMarca, cod_material[10], nombre[20], color[20], cod_marca[10];
 	float precio;
 	int unidades;
+	char marcas[5][50];
+	cargarMarcas(marcas);
 	result = sqlite3_open("Datos.sqlite", &db);
 
+	nomMarca = (char*)malloc(20);
 	sprintf(sql, "select * from material");
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	result = sqlite3_step(stmt); //Ejecutar la sentencia
@@ -528,20 +545,59 @@ int verMateriales() {
 		precio = (float) sqlite3_column_double(stmt, 3);
 		unidades = sqlite3_column_int(stmt, 4);
 		sprintf(cod_marca, "%s", (char*) sqlite3_column_text(stmt, 5));
-		/*printf(
-		 "MATERIAL: %s - NOMBRE: %s - COLOR: %s - PRECIO: %.2f - UNIDADES: %i - MARCA: %s\n",
-		 cod_material, nombre, color, precio, unidades, cod_marca);*/
 
+		int pos = 0, enc = 0;
+		char *codigo,*nom;
+		while (pos < 5 && !enc) {
+			codigo = strtok(marcas[pos], " ");
+			nom = strtok(NULL, "");
+			if (strcmp(codigo, cod_marca) == 0) {
+				enc = 1;
+			} else {
+				pos++;
+			}
+		}
+		sprintf(nomMarca,"%s",nom);
+
+		sprintf(sendBuff, "%s %s %s %f %i %s %s", cod_material, nombre, color,
+				precio, unidades, cod_marca, nomMarca);
+		send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 		result = sqlite3_step(stmt); //Ejecutar la sentencia
 	}
+	sprintf(sendBuff, "FIN");
+	send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 	sqlite3_finalize(stmt); //Cerrar la sentencia
 
 	return 0;
 
 }
+/*
+ int devolverMarca(SOCKET comm_socket, char* cod_marca) {
+ char sendBuff[512];
+ sqlite3 *db;
+ sqlite3_stmt *stmt;
+ char sql[200];
+ int result;
+ char nomMarca[20];
+ result = sqlite3_open("Datos.sqlite", &db);
 
-int verCompras() {
+ sprintf(sql, "select nombre from marca where cod_marca = '%s'", cod_marca);
+ sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+ result = sqlite3_step(stmt); //Ejecutar la sentencia
+ if (result == SQLITE_ROW) {
+ sprintf(nomMarca, "%s", (char*) sqlite3_column_text(stmt, 0));
+ sprintf(sendBuff, "%s" , nomMarca);
+ send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+ }
+ sqlite3_finalize(stmt);
+
+ return 0;
+
+ }*/
+
+int verCompras(SOCKET comm_socket) {
 	sqlite3 *db;
+	char sendBuff[512];
 	sqlite3_stmt *stmt;
 	char sql[200];
 	int result;
@@ -559,11 +615,14 @@ int verCompras() {
 		sprintf(cod_material, "%s", (char*) sqlite3_column_text(stmt, 2));
 		unidades = sqlite3_column_int(stmt, 3);
 		importe = (float) sqlite3_column_double(stmt, 4);
-		printf(
+		sprintf(
 				"TICKET: %i - CLIENTE: %s - MATERIAL: %s - UNIDADES: %i - IMPORTE: %.2f \n",
 				ticket, nombre_persona, cod_material, unidades, importe);
+
 		result = sqlite3_step(stmt); //Ejecutar la sentencia
 	}
+	sprintf(sendBuff, "FIN");
+	send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 	sqlite3_finalize(stmt); //Cerrar la sentencia
 
 	return 0;

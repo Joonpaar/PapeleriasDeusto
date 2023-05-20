@@ -1,6 +1,9 @@
 #ifndef BBDD_H_
 #define BBDD_H_
 
+
+#include <winsock2.h>
+
 //CREACION TABLAS
 int crearTablaCompra();
 int crearTablaPersona();
@@ -20,8 +23,9 @@ int editarNombreMaterial(char *codigo_material, char *nombre);
 int editarColorMaterial(char *codigo_material, char *color);
 int editarPrecioMaterial(char *codigo_material, float precio);
 int editarUnidadesMaterial(char *codigo_material, int unidades);
-int verMateriales();
-int verCompras();
+int verMateriales(SOCKET comm_socket);
+int verCompras(SOCKET comm_socket);
+int devolverMarca(SOCKET comm_socket, char * cod_marca);
 int verMarcas();
 
 //MENU CLIENTE
@@ -30,12 +34,12 @@ int anyadirCompra(char* nombrePersona, char* codigoMat, int cantidad, float impo
 float conseguirPrecioMaterial(char *codigoMat);
 
 //DATOS
+void cargarMarcas(char marcas[][50]);
 int importarMarcas();
 int importarCompras();
 int importarPersonas();
 int importarMateriales();
 int importarDatos();
-
 //BORRADO DE TABLAS
 int borrarDatosMateriales();
 int borrarDatosCompras();

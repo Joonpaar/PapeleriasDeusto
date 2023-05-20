@@ -17,7 +17,7 @@ public:
 	Material();
 	Material(int unidades, char *cod, char *nom, float precio, char *color,
 			const Marca &m);
-	void verMaterial(const Material &m);
+	void verMaterial();
 	char* getCodigo() const;
 	void setCodigo(char *codigo);
 	char* getColor() const;

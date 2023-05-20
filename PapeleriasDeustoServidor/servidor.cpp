@@ -90,16 +90,20 @@ int main(int argc, char *argv[]) {
 	// Closing the listening sockets (is not going to be used anymore)
 	closesocket(conn_socket);
 	int fin = 0;
+	crearTablas();
+	importarDatos();
+
+	/*or(int i=0;i<5;i++){
+		printf("%s\n",marcas[i]);fflush(stdout);
+	}*/
+	char opcion, opcionC, opcionA, opcionA2, opcion2C, opcionA3;
+	char nomC[20], conC[20], nomA[20], conA[20];
+	char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],codMarcaMaterial[10];
+	int resul, unidadesMaterial;
+	float precioMaterial;
+
 	do {
 		/*EMPIEZA EL PROGRAMA DEL SERVIDOR*/
-		crearTablas();
-		importarDatos();
-		char opcion, opcionC, opcionA, opcionA2, opcion2C, opcionA3;
-		char nomC[20], conC[20], nomA[20], conA[20];
-		char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
-				codMarcaMaterial[10];
-		int resul, unidadesMaterial;
-		float precioMaterial;
 		do {
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 			sscanf(recvBuff, "%c", &opcion);
@@ -268,8 +272,10 @@ int main(int argc, char *argv[]) {
 										break;
 									}
 								case '4':
+									verMateriales(comm_socket);
 									break;
 								case '5':
+									verCompras(comm_socket);
 									break;
 								case '6':
 									break;
@@ -352,12 +358,22 @@ int main(int argc, char *argv[]) {
 										if (comprobacionUnidadesExisten(codMat,
 												unidadesMaterial) == 1) {
 											resul = 1;
-											int unidadesAntiguas = conseguirUnidadesDelMaterial(codMat);
-											int unidadesNuevas = unidadesAntiguas-unidadesMaterial;
-											editarUnidadesMaterial(codMat, unidadesNuevas);
-											float precio = conseguirPrecioMaterial(codMat);
-											float precioAPagar = precio * unidadesMaterial;
-											anyadirCompra(nomC, codMat, unidadesMaterial, precioAPagar);
+											int unidadesAntiguas =
+													conseguirUnidadesDelMaterial(
+															codMat);
+											int unidadesNuevas =
+													unidadesAntiguas
+															- unidadesMaterial;
+											editarUnidadesMaterial(codMat,
+													unidadesNuevas);
+											float precio =
+													conseguirPrecioMaterial(
+															codMat);
+											float precioAPagar = precio
+													* unidadesMaterial;
+											anyadirCompra(nomC, codMat,
+													unidadesMaterial,
+													precioAPagar);
 										} else {
 											resul = 0;
 										}
