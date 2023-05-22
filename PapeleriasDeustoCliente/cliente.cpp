@@ -14,7 +14,6 @@ using namespace containerPersonaCliente;
 using namespace containerMarcaCliente;
 using namespace containerCompraCliente;
 
-
 void quitarSalto(char *cad) { //PORQUE SINO EL fgets COGE TAMBIEN EL \n COMO CARACTER
 	if (cad[strlen(cad) - 1] == '\n')
 		cad[strlen(cad) - 1] = '\0';
@@ -65,7 +64,7 @@ char menuAdministrador() {
 	cout << "4. VER ITINERARIO" << endl;
 	cout << "5. VER TODAS LAS COMPRAS" << endl;
 	cout << "6. ANALISIS DE MARCAS" << endl;
-	cout << "7. PROXIMAMENTE..." << endl;
+	cout << "7. DATOS TIENDA" << endl;
 	cout << "0. CERRAR SESION" << endl;
 	cout << "Elige una opcion: ";
 	cin >> opcion;
@@ -92,7 +91,7 @@ char menuCliente() {
 	cout << "MENU CLIENTE" << endl;
 	cout << "1. COMPRAR" << endl;
 	cout << "2. HISTORIAL" << endl;
-	cout << "3. CARRITO" << endl;
+	cout << "3. ESTADISTICAS" << endl;
 	cout << "0. CERRAR SESION" << endl;
 	cout << "Elige una opcion: ";
 	cin >> opcion;
@@ -357,39 +356,51 @@ int main(int argc, char *argv[]) {
 											&precioMat, &unidadesMaterial,
 											codMarcaMaterial, nomMarca);
 
-									Marca marca = Marca(nomMarca,
-											codMarcaMaterial);
-									Material mat = Material(unidadesMaterial,
-											codMat, nomMat, precioMat, colorMat,
-											marca);
-									mat.verMaterial();
+									Marca *marca = new Marca(nomMarca, codMarcaMaterial);
+
+									Material *mat = new Material(unidadesMaterial,
+											codMat, nomMat, precioMat, colorMat, *marca);
+									mat->verMaterial();
 									recv(s, recvBuff, sizeof(recvBuff), 0);
-									cout << "++++++++++++++++++++" << endl;
 
 								}
 								break;
 							case '5':
 								recv(s, recvBuff, sizeof(recvBuff), 0);
-								while (strncmp(recvBuff, "FIN",3) != 0) {
-									cout << recvBuff << endl;
-
+								while (strncmp(recvBuff, "FIN", 3) != 0) {
 									sscanf(recvBuff,
-											"%i %s %s %s %s %f %s %i %s %i %f",
+											"%i %s %s %s %s %f %s %i %s %s %i %f",
 											&ticket, nom, contrasenya, codMat,
 											nomMat, &precioMat, colorMat,
 											&unidadesMaterial, codMarcaMaterial,
-											&unidadesCompra, &importe);
+											nomMarca, &unidadesCompra,
+											&importe);
 
 									Persona *p = new Persona(nom, contrasenya);
-									Marca *m = new Marca("Prueba", codMarcaMaterial);
-									Material *mat = new Material(unidadesMaterial, codMat, nomMat, precioMat, colorMat, *m);
-									Compra *com = new Compra(ticket, *p, *mat, unidadesCompra, importe);
+									Marca *m = new Marca(nomMarca,
+											codMarcaMaterial);
+									Material *mat = new Material(
+											unidadesMaterial, codMat, nomMat,
+											precioMat, colorMat, *m);
+									Compra *com = new Compra(ticket, *p, *mat,
+											unidadesCompra, importe);
 									com->verCompra();
 									recv(s, recvBuff, sizeof(recvBuff), 0);
 
 								}
 								break;
 							case '6':
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								while (strncmp(recvBuff, "FIN", 3) != 0) {
+									sscanf(recvBuff, "%s %s", codMarcaMaterial,
+											nomMarca);
+
+									Marca *m = new Marca(nomMarca,
+											codMarcaMaterial);
+									m->verMarca();
+									recv(s, recvBuff, sizeof(recvBuff), 0);
+								}
+
 								break;
 							case '7':
 								break;
@@ -486,6 +497,27 @@ int main(int argc, char *argv[]) {
 								}
 								break;
 							case '2':
+								sprintf(sendBuff, "%s", nom);
+								send(s, sendBuff, sizeof(sendBuff), 0);
+
+								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+								sscanf(recvBuff, "%d", &resul);
+
+								if (resul == 1) {
+									cout << "HAS COMPRADO " << resul
+											<< " VEZ EN LA TIENDA" << endl;
+								} else {
+									cout << "HAS COMPRADO " << resul
+											<< " VECES EN LA TIENDA" << endl;
+								}
+
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								sscanf(recvBuff, "%s %i", codMat, &unidadesCompra);
+								cout<<"EL MATERIAL QUE MAS HAS COMPRADO HA SIDO EL "<<codMat<<" CON UNA CANTIDAD TOTAL DE "<<unidadesCompra<<" VECES"<<endl;
+
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								sscanf(recvBuff, "%f", &importe);
+								cout<<"TU COMPRA MAS CARA HA SIDO DE "<<importe<<"€"<<endl;
 								break;
 							case '3':
 								break;
@@ -518,6 +550,7 @@ int main(int argc, char *argv[]) {
 					break;
 
 				case '0':
+					cout<<"AGUR"<<endl;
 					break;
 				}
 

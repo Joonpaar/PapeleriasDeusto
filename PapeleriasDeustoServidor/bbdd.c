@@ -597,11 +597,11 @@ int verMateriales(SOCKET comm_socket) {
 int verCompras(SOCKET comm_socket) {
 	sqlite3 *db;
 	char sendBuff[512];
-	sqlite3_stmt *stmt, *stmt2, *stmt3;
-	char sql[200], sql2[200], sql3[200];
-	int result, result2, result3;
+	sqlite3_stmt *stmt, *stmt2, *stmt3, *stmt4;
+	char sql[200], sql2[200], sql3[200], sql4[200];
+	int result, result2, result3, result4;
 	char cod_material[10], nombre_persona[20], contrasenya[20], nomMat[20],
-			colorMat[20], codMarcaMat[20];
+			colorMat[20], codMarcaMat[20], nomMarca[20];
 	float importe, precioMat;
 	int unidadesCompra, ticket, unidadesMat;
 
@@ -640,12 +640,23 @@ int verCompras(SOCKET comm_socket) {
 				sprintf(codMarcaMat, "%s",
 						(char*) sqlite3_column_text(stmt3, 4));
 
-				sprintf(sendBuff, "%i %s %s %s %s %.2f %s %i %s %i %.2f",
-						ticket, nombre_persona, contrasenya, cod_material,
-						nomMat, precioMat, colorMat, unidadesMat, codMarcaMat,
-						unidadesCompra, importe);
-				send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
-				//result3 = sqlite3_step(stmt3); // Avanzar al siguiente resultado de la tercera consulta
+				sprintf(sql4, "select nombre from marca where cod_marca = '%s'",
+						codMarcaMat);
+				sqlite3_prepare_v2(db, sql4, -1, &stmt4, NULL); // Preparar la sentencia
+				result4 = sqlite3_step(stmt4);
+
+				if (result4 == SQLITE_ROW) {
+					sprintf(nomMarca, "%s",
+							(char*) sqlite3_column_text(stmt4, 0));
+
+					sprintf(sendBuff, "%i %s %s %s %s %.2f %s %i %s %s %i %.2f",
+							ticket, nombre_persona, contrasenya, cod_material,
+							nomMat, precioMat, colorMat, unidadesMat,
+							codMarcaMat, nomMarca, unidadesCompra, importe);
+					send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+				}
+				sqlite3_finalize(stmt4);
+
 			}
 			sqlite3_finalize(stmt3);
 		}
@@ -656,6 +667,93 @@ int verCompras(SOCKET comm_socket) {
 	sqlite3_finalize(stmt);
 	sprintf(sendBuff, "FIN");
 	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+	return 0;
+}
+
+int verMarcas(SOCKET comm_socket) {
+	sqlite3 *db;
+	char sendBuff[512];
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result;
+	char codMarca[20], nomMarca[20];
+
+	result = sqlite3_open("Datos.sqlite", &db);
+	sprintf(sql, "select * from marca");
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); // Preparar la sentencia
+	result = sqlite3_step(stmt); // Ejecutar la sentencia
+
+	while (result == SQLITE_ROW) {
+		sprintf(codMarca, "%s", (char*) sqlite3_column_text(stmt, 0));
+		sprintf(nomMarca, "%s", (char*) sqlite3_column_text(stmt, 1));
+
+		sprintf(sendBuff, "%s %s", codMarca, nomMarca);
+		send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+		result = sqlite3_step(stmt);
+	}
+	sqlite3_finalize(stmt);
+	sprintf(sendBuff, "FIN");
+	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+	return 0;
+
+}
+
+int verHistorial1(SOCKET comm_socket, char *nomPersona) { //BUSCA LA CANTIDAD DE COMPRAS TOTALES DEL USUARIO
+	sqlite3 *db;
+	char sendBuff[512];
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result;
+	int contador;
+	result = sqlite3_open("Datos.sqlite", &db);
+	sprintf(sql, "SELECT COUNT(*) FROM compra where nombre_persona = '%s'",
+			nomPersona);
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	contador = (int) sqlite3_column_double(stmt, 0);
+	sprintf(sendBuff, "%i", contador);
+	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+	sqlite3_finalize(stmt); //Cerrar la sentencia
+	return 0;
+}
+
+int verHistorial2(SOCKET comm_socket, char *nomPersona) {
+	sqlite3 *db;
+	char sendBuff[512], codMat[20];
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result, cantidad;
+	int contador;
+	result = sqlite3_open("Datos.sqlite", &db);
+	sprintf(sql,
+			"SELECT cod_material, COUNT(*) AS mas_comprado FROM compra where nombre_persona = '%s' GROUP BY cod_material ORDER BY cantidad DESC LIMIT 1",
+			nomPersona);
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	sprintf(codMat, "%s", (char*) sqlite3_column_text(stmt, 0));
+	cantidad = (int) sqlite3_column_double(stmt, 0);
+	sprintf(sendBuff, "%s %i", codMat, cantidad);
+	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+	sqlite3_finalize(stmt); //Cerrar la sentencia
+	return 0;
+}
+
+int verHistorial3(SOCKET comm_socket, char *nomPersona) {
+	sqlite3 *db;
+	char sendBuff[512];
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result;
+	float importe;
+	result = sqlite3_open("Datos.sqlite", &db);
+	sprintf(sql, "SELECT MAX(importe) FROM compra where nombre_persona = '%s'",
+			nomPersona);
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	importe = (float) sqlite3_column_double(stmt, 0);
+	sprintf(sendBuff, "%.2f", importe);
+	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+	sqlite3_finalize(stmt); //Cerrar la sentencia
 	return 0;
 }
 

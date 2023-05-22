@@ -94,11 +94,12 @@ int main(int argc, char *argv[]) {
 	importarDatos();
 
 	/*or(int i=0;i<5;i++){
-		printf("%s\n",marcas[i]);fflush(stdout);
-	}*/
+	 printf("%s\n",marcas[i]);fflush(stdout);
+	 }*/
 	char opcion, opcionC, opcionA, opcionA2, opcion2C, opcionA3;
 	char nomC[20], conC[20], nomA[20], conA[20];
-	char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],codMarcaMaterial[10];
+	char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
+			codMarcaMaterial[10];
 	int resul, unidadesMaterial;
 	float precioMaterial;
 
@@ -278,6 +279,7 @@ int main(int argc, char *argv[]) {
 									verCompras(comm_socket);
 									break;
 								case '6':
+									verMarcas(comm_socket);
 									break;
 								case '7':
 									break;
@@ -383,6 +385,12 @@ int main(int argc, char *argv[]) {
 									}
 									break;
 								case '2':
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0); //Recibe el nombre
+									sscanf(recvBuff, "%s", nom);
+									verHistorial1(comm_socket, nom);
+									verHistorial2(comm_socket, nom);
+									verHistorial3(comm_socket, nom);
 									break;
 								case '3':
 									break;
