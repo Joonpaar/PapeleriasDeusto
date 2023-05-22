@@ -37,7 +37,7 @@ void cargarMarcas(char marcas[][50]) {
 	pf = fopen("Marcas.txt", "r");
 	if (pf != (FILE*) NULL) {
 		while (fscanf(pf, "%s %s", codigo, nombre) != EOF) {
-			sprintf(marcas[i],"%s %s", codigo, nombre);
+			sprintf(marcas[i], "%s %s", codigo, nombre);
 			i++;
 		}
 		fclose(pf);
@@ -81,7 +81,6 @@ int importarMarcas() {
 	return 0;
 
 }
-
 
 int crearTablaMateriales() {
 	sqlite3 *db;
@@ -263,7 +262,7 @@ int importarCompras() {
 
 	pf = fopen("Compras.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%i %s %s %i %f", &ticket, nombreProducto,
+		while (fscanf(pf, "%i %s %s %i %f \n", &ticket, nombreProducto,
 				codigoMarca, &cantidad, &importe) != EOF) {
 			sprintf(sql, "INSERT INTO compra VALUES (%i, '%s', '%s', %i , %f)",
 					ticket, nombreProducto, codigoMarca, cantidad, importe);
@@ -534,7 +533,7 @@ int verMateriales(SOCKET comm_socket) {
 	cargarMarcas(marcas);
 	result = sqlite3_open("Datos.sqlite", &db);
 
-	nomMarca = (char*)malloc(20);
+	nomMarca = (char*) malloc(20);
 	sprintf(sql, "select * from material");
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	result = sqlite3_step(stmt); //Ejecutar la sentencia
@@ -547,7 +546,7 @@ int verMateriales(SOCKET comm_socket) {
 		sprintf(cod_marca, "%s", (char*) sqlite3_column_text(stmt, 5));
 
 		int pos = 0, enc = 0;
-		char *codigo,*nom;
+		char *codigo, *nom;
 		while (pos < 5 && !enc) {
 			codigo = strtok(marcas[pos], " ");
 			nom = strtok(NULL, "");
@@ -557,7 +556,7 @@ int verMateriales(SOCKET comm_socket) {
 				pos++;
 			}
 		}
-		sprintf(nomMarca,"%s",nom);
+		sprintf(nomMarca, "%s", nom);
 
 		sprintf(sendBuff, "%s %s %s %f %i %s %s", cod_material, nombre, color,
 				precio, unidades, cod_marca, nomMarca);
@@ -598,35 +597,66 @@ int verMateriales(SOCKET comm_socket) {
 int verCompras(SOCKET comm_socket) {
 	sqlite3 *db;
 	char sendBuff[512];
-	sqlite3_stmt *stmt;
-	char sql[200];
-	int result;
-	char cod_material[10], nombre_persona[20];
-	float importe;
-	int unidades, ticket;
-	result = sqlite3_open("Datos.sqlite", &db);
+	sqlite3_stmt *stmt, *stmt2, *stmt3;
+	char sql[200], sql2[200], sql3[200];
+	int result, result2, result3;
+	char cod_material[10], nombre_persona[20], contrasenya[20], nomMat[20],
+			colorMat[20], codMarcaMat[20];
+	float importe, precioMat;
+	int unidadesCompra, ticket, unidadesMat;
 
+	result = sqlite3_open("Datos.sqlite", &db);
 	sprintf(sql, "select * from compra");
-	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
-	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); // Preparar la sentencia
+	result = sqlite3_step(stmt); // Ejecutar la sentencia
+
 	while (result == SQLITE_ROW) {
 		ticket = sqlite3_column_int(stmt, 0);
 		sprintf(nombre_persona, "%s", (char*) sqlite3_column_text(stmt, 1));
 		sprintf(cod_material, "%s", (char*) sqlite3_column_text(stmt, 2));
-		unidades = sqlite3_column_int(stmt, 3);
+		unidadesCompra = sqlite3_column_int(stmt, 3);
 		importe = (float) sqlite3_column_double(stmt, 4);
-		sprintf(
-				"TICKET: %i - CLIENTE: %s - MATERIAL: %s - UNIDADES: %i - IMPORTE: %.2f \n",
-				ticket, nombre_persona, cod_material, unidades, importe);
 
-		result = sqlite3_step(stmt); //Ejecutar la sentencia
+		sprintf(sql2, "select contrasenya from persona where nombre = '%s'",
+				nombre_persona);
+		sqlite3_prepare_v2(db, sql2, -1, &stmt2, NULL); // Preparar la sentencia
+		result2 = sqlite3_step(stmt2); // Ejecutar la sentencia
+
+		if (result2 == SQLITE_ROW) {
+			sprintf(contrasenya, "%s", (char*) sqlite3_column_text(stmt2, 0));
+			sqlite3_finalize(stmt2);
+
+			sprintf(sql3,
+					"select nombre_material, color, precio, unidades, cod_marca from material where cod_material = '%s'",
+					cod_material);
+			sqlite3_prepare_v2(db, sql3, -1, &stmt3, NULL); // Preparar la sentencia
+			result3 = sqlite3_step(stmt3);
+
+			if (result3 == SQLITE_ROW) {
+				sprintf(nomMat, "%s", (char*) sqlite3_column_text(stmt3, 0));
+				sprintf(colorMat, "%s", (char*) sqlite3_column_text(stmt3, 1));
+				precioMat = (float) sqlite3_column_double(stmt3, 2);
+				unidadesMat = sqlite3_column_int(stmt3, 3);
+				sprintf(codMarcaMat, "%s",
+						(char*) sqlite3_column_text(stmt3, 4));
+
+				sprintf(sendBuff, "%i %s %s %s %s %.2f %s %i %s %i %.2f",
+						ticket, nombre_persona, contrasenya, cod_material,
+						nomMat, precioMat, colorMat, unidadesMat, codMarcaMat,
+						unidadesCompra, importe);
+				send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+				//result3 = sqlite3_step(stmt3); // Avanzar al siguiente resultado de la tercera consulta
+			}
+			sqlite3_finalize(stmt3);
+		}
+		sqlite3_finalize(stmt2);
+		result = sqlite3_step(stmt); // Avanzar al siguiente resultado de la primera consulta
 	}
+
+	sqlite3_finalize(stmt);
 	sprintf(sendBuff, "FIN");
-	send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-	sqlite3_finalize(stmt); //Cerrar la sentencia
-
+	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 	return 0;
-
 }
 
 int anyadirCompra(char *nombrePersona, char *codigoMat, int cantidad,
@@ -1027,7 +1057,7 @@ int guardarDatosCompras() {
 
 	FILE *f = fopen("Compras.txt", "w"); // Abre el archivo para escritura y borra el contenido previo
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
-		fprintf(f, "%i %s %s %i %f", sqlite3_column_int(stmt, 0),
+		fprintf(f, "%i %s %s %i %f \n", sqlite3_column_int(stmt, 0),
 				sqlite3_column_text(stmt, 1), sqlite3_column_text(stmt, 2),
 				sqlite3_column_int(stmt, 3), sqlite3_column_double(stmt, 4));
 	}

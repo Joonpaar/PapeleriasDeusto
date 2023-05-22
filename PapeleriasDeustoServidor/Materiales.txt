@@ -1,2 +1,2 @@
-10A Boli Azul 0.500000 150 000A
-20B Subrayador Naranja 1.000000 200 111B
+10A Boli Azul 0.500000 121 000A
+20B Subrayador Naranja 1.000000 83 111B

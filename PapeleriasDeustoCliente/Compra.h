@@ -17,7 +17,7 @@ private:
 public:
 	Compra();
 	Compra(int ticket, const Persona &p, const Material &m, int cantidad, float importe);
-	void verCompra(Compra c);
+	void verCompra();
 	virtual ~Compra();
 };
 }

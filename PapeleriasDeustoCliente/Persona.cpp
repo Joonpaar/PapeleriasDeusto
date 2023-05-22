@@ -9,16 +9,16 @@ Persona::Persona() {
 
 }
 
-void Persona::verPersona(const Persona &p) {
-	cout << "NOMBRE: " << p.nombre << endl;
-	cout << "CONTRASENYA: " << p.contrasenya << endl;
+void Persona::verPersona() {
+	cout << "NOMBRE: " << nombre << endl;
+	cout << "CONTRASENYA: " << contrasenya << endl;
 }
 
 Persona::Persona(char *nom, char *con) {
 	this->nombre = new char[strlen(nom) + 1];
-	this->nombre = nom;
+	strcpy(this->nombre , nom);
 	this->contrasenya = new char[strlen(con) + 1];
-	this->contrasenya = con;
+	strcpy(this->contrasenya , con);
 
 }
 
@@ -38,9 +38,9 @@ void Persona::setNombre(char *nombre) {
 	this->nombre = nombre;
 }
 
-void Usuario::verUsuario(const Usuario &u){
-	Persona::verPersona(u);
-	cout<<"ID: "<<u.id<<endl;
+void Usuario::verUsuario(){
+	Persona::verPersona();
+	cout<<"ID: "<<id<<endl;
 }
 
 Persona::~Persona() {

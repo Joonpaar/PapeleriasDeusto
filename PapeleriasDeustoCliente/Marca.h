@@ -1,6 +1,5 @@
 #ifndef MARCA_H_
 #define MARCA_H_
-#include <list>
 
 namespace containerMarcaCliente{
 class Marca {
@@ -10,7 +9,6 @@ private:
 public:
 	Marca();
 	Marca(char *nom, char *cod);
-	int anyadirMarca(std::list<Marca> &listaMarca, const Marca &m);
 	void verMarca();
 	virtual ~Marca();
 	char* getCod() const;

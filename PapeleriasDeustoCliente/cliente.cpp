@@ -10,6 +10,10 @@
 #define SERVER_PORT 6000
 using namespace std;
 using namespace containerMaterialCliente;
+using namespace containerPersonaCliente;
+using namespace containerMarcaCliente;
+using namespace containerCompraCliente;
+
 
 void quitarSalto(char *cad) { //PORQUE SINO EL fgets COGE TAMBIEN EL \n COMO CARACTER
 	if (cad[strlen(cad) - 1] == '\n')
@@ -141,9 +145,9 @@ int main(int argc, char *argv[]) {
 	/*EMPIEZA EL PROGRAMA DEL CLIENTE*/
 	char opcion, opcionA, opcionC, opcionC2, opcionA2, opcionA3;
 	char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
-			codMarcaMaterial[10], nomMarca[10];
-	int resul, unidadesMaterial;
-	float precioMat;
+			codMarcaMaterial[10], nomMarca[10], nomPersona[20], contrasenya[20];
+	int resul, unidadesMaterial, ticket, unidadesCompra;
+	float precioMat, importe;
 	do {
 		opcion = menu();
 		sprintf(sendBuff, "%c", opcion);
@@ -351,27 +355,36 @@ int main(int argc, char *argv[]) {
 									sscanf(recvBuff, "%s %s %s %f %i %s %s",
 											codMat, nomMat, colorMat,
 											&precioMat, &unidadesMaterial,
-											codMarcaMaterial,nomMarca);
-									cout<<codMat<<endl;
-									cout<<nomMat<<endl;
-									cout<<colorMat<<endl;
-									cout<<precioMat<<endl;
-									cout<<unidadesMaterial<<endl;
-									cout<<codMarcaMaterial<<endl;
-									cout<<nomMarca<<endl;
+											codMarcaMaterial, nomMarca);
 
-									Marca marca = Marca(nomMarca, codMarcaMaterial);
-									Material mat = Material(unidadesMaterial, codMat, nomMat, precioMat, colorMat, marca);
+									Marca marca = Marca(nomMarca,
+											codMarcaMaterial);
+									Material mat = Material(unidadesMaterial,
+											codMat, nomMat, precioMat, colorMat,
+											marca);
 									mat.verMaterial();
 									recv(s, recvBuff, sizeof(recvBuff), 0);
-									cout<<"++++++++++++++++++++"<<endl;
+									cout << "++++++++++++++++++++" << endl;
 
 								}
 								break;
 							case '5':
 								recv(s, recvBuff, sizeof(recvBuff), 0);
-								while (strcmp(recvBuff, "FIN") != 0) {
-									printf("%s\n", recvBuff);
+								while (strncmp(recvBuff, "FIN",3) != 0) {
+									cout << recvBuff << endl;
+
+									sscanf(recvBuff,
+											"%i %s %s %s %s %f %s %i %s %i %f",
+											&ticket, nom, contrasenya, codMat,
+											nomMat, &precioMat, colorMat,
+											&unidadesMaterial, codMarcaMaterial,
+											&unidadesCompra, &importe);
+
+									Persona *p = new Persona(nom, contrasenya);
+									Marca *m = new Marca("Prueba", codMarcaMaterial);
+									Material *mat = new Material(unidadesMaterial, codMat, nomMat, precioMat, colorMat, *m);
+									Compra *com = new Compra(ticket, *p, *mat, unidadesCompra, importe);
+									com->verCompra();
 									recv(s, recvBuff, sizeof(recvBuff), 0);
 
 								}

@@ -10,7 +10,7 @@ private:
 public:
 	Persona();
 	Persona(char *nom, char *con);
-	virtual void verPersona(const Persona &p);
+	virtual void verPersona();
 	virtual ~Persona();
 	char* getContrasenya() const;
 	void setContrasenya(char *contrasenya);
@@ -21,7 +21,7 @@ public:
 class Usuario: public Persona {
 	int id;
 public:
-	void verUsuario(const Usuario &u);
+	void verUsuario();
 };
 
 }

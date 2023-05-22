@@ -16,10 +16,6 @@ Marca::Marca(char *nom, char *cod) {
 	strcpy(this->nom , nom);
 }
 
-void anyadirMarca(std::list<Marca> &listaMarca, const Marca &m) {
-	listaMarca.push_back(m);
-}
-
 void Marca::verMarca() {
 	cout << "CODIGO: " << cod << endl;
 	cout << "NOMBRE: " << nom << endl;

@@ -12,12 +12,12 @@ Compra::Compra() {
 
 }
 
-void Compra::verCompra(Compra c){
-	cout<<"TICKET: "<<c.ticket<<endl;
-	cout<<"PERSONA: "<<c.p.getNombre()<<endl;
-	cout<<"MATERIAL: "<<c.m.getNom()<<endl;
-	cout<<"CANTIDAD: "<<c.cantidad<<endl;
-	cout<<"IMPORTE: "<<c.importe<<endl;
+void Compra::verCompra(){
+	cout<<"TICKET: "<<ticket<<endl;
+	cout<<"PERSONA: "<<p.getNombre()<<endl;
+	cout<<"MATERIAL: "<<m.getNom()<<endl;
+	cout<<"CANTIDAD: "<<cantidad<<endl;
+	cout<<"IMPORTE: "<<importe<<endl;
 }
 
 Compra::Compra(int ticket, const Persona &p, const Material &m, int cantidad, float importe){
