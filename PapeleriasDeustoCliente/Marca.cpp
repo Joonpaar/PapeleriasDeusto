@@ -17,7 +17,7 @@ Marca::Marca(char *nom, char *cod) {
 }
 
 void Marca::verMarca() {
-	cout << "CODIGO: " << cod << endl;
+	cout << "CODIGO: " << cod << " - ";
 	cout << "NOMBRE: " << nom << endl;
 }
 

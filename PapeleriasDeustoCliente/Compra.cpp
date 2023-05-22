@@ -13,10 +13,10 @@ Compra::Compra() {
 }
 
 void Compra::verCompra(){
-	cout<<"TICKET: "<<ticket<<endl;
-	cout<<"PERSONA: "<<p.getNombre()<<endl;
-	cout<<"MATERIAL: "<<m.getNom()<<endl;
-	cout<<"CANTIDAD: "<<cantidad<<endl;
+	cout<<"TICKET: "<<ticket<<" - ";
+	cout<<"PERSONA: "<<p.getNombre()<<" - ";
+	cout<<"MATERIAL: "<<m.getNom()<<" - ";
+	cout<<"CANTIDAD: "<<cantidad<<" - ";
 	cout<<"IMPORTE: "<<importe<<endl;
 }
 

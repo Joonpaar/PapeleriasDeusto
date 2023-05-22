@@ -10,7 +10,7 @@ Persona::Persona() {
 }
 
 void Persona::verPersona() {
-	cout << "NOMBRE: " << nombre << endl;
+	cout << "NOMBRE: " << nombre << " - ";
 	cout << "CONTRASENYA: " << contrasenya << endl;
 }
 

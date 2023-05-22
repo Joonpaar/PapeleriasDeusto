@@ -145,8 +145,9 @@ int main(int argc, char *argv[]) {
 	char opcion, opcionA, opcionC, opcionC2, opcionA2, opcionA3;
 	char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
 			codMarcaMaterial[10], nomMarca[10], nomPersona[20], contrasenya[20];
-	int resul, unidadesMaterial, ticket, unidadesCompra;
-	float precioMat, importe;
+	int resul, unidadesMaterial, ticket, unidadesCompra, numClientes,
+			numCompras;
+	float precioMat, importe, importeMax;
 	do {
 		opcion = menu();
 		sprintf(sendBuff, "%c", opcion);
@@ -356,13 +357,14 @@ int main(int argc, char *argv[]) {
 											&precioMat, &unidadesMaterial,
 											codMarcaMaterial, nomMarca);
 
-									Marca *marca = new Marca(nomMarca, codMarcaMaterial);
+									Marca *marca = new Marca(nomMarca,
+											codMarcaMaterial);
 
-									Material *mat = new Material(unidadesMaterial,
-											codMat, nomMat, precioMat, colorMat, *marca);
+									Material *mat = new Material(
+											unidadesMaterial, codMat, nomMat,
+											precioMat, colorMat, *marca);
 									mat->verMaterial();
 									recv(s, recvBuff, sizeof(recvBuff), 0);
-
 								}
 								break;
 							case '5':
@@ -403,6 +405,19 @@ int main(int argc, char *argv[]) {
 
 								break;
 							case '7':
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								sscanf(recvBuff, "%i", &numClientes);
+								cout << "ACTUALMENTE HAY " << numClientes
+										<< " CLIENTES REGISTRADOS EN LA TIENDA"
+										<< endl;
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								sscanf(recvBuff, "%i", &numCompras);
+								cout << "SE HAN REGISTRADO UN TOTAL DE "
+										<< numCompras << " COMPRAS" << endl;
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								sscanf(recvBuff, "%f", &importeMax);
+								cout << "LA COMPRA MAS CARA HA SIDO DE "
+										<< importeMax << "€" << endl;
 								break;
 							case '0':
 								cout << "AGUR" << endl;
@@ -512,12 +527,18 @@ int main(int argc, char *argv[]) {
 								}
 
 								recv(s, recvBuff, sizeof(recvBuff), 0);
-								sscanf(recvBuff, "%s %i", codMat, &unidadesCompra);
-								cout<<"EL MATERIAL QUE MAS HAS COMPRADO HA SIDO EL "<<codMat<<" CON UNA CANTIDAD TOTAL DE "<<unidadesCompra<<" VECES"<<endl;
+								sscanf(recvBuff, "%s %i", codMat,
+										&unidadesCompra);
+								cout
+										<< "EL MATERIAL QUE MAS HAS COMPRADO HA SIDO EL "
+										<< codMat
+										<< " CON UNA CANTIDAD TOTAL DE "
+										<< unidadesCompra << " VECES" << endl;
 
 								recv(s, recvBuff, sizeof(recvBuff), 0);
 								sscanf(recvBuff, "%f", &importe);
-								cout<<"TU COMPRA MAS CARA HA SIDO DE "<<importe<<"€"<<endl;
+								cout << "TU COMPRA MAS CARA HA SIDO DE "
+										<< importe << "€" << endl;
 								break;
 							case '3':
 								break;
@@ -550,7 +571,7 @@ int main(int argc, char *argv[]) {
 					break;
 
 				case '0':
-					cout<<"AGUR"<<endl;
+					cout << "AGUR" << endl;
 					break;
 				}
 

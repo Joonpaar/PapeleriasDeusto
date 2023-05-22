@@ -282,6 +282,9 @@ int main(int argc, char *argv[]) {
 									verMarcas(comm_socket);
 									break;
 								case '7':
+									verDatosTienda1(comm_socket);
+									verDatosTienda2(comm_socket);
+									verDatosTienda3(comm_socket);
 									break;
 								case '0':
 									break;

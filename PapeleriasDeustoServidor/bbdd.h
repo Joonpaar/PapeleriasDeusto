@@ -15,6 +15,12 @@ int crearTablas();
 int registrarUsuario(char *nombre, char *contrasenya, int permiso, int id);
 int inicioSesionAdmin(char *nombre, char *contrasenya);
 int inicioSesionCliente(char *nombre, char *contrasenya);
+int verMateriales(SOCKET comm_socket);
+int verCompras(SOCKET comm_socket);
+int verMarcas(SOCKET comm_socket);
+int verDatosTienda1(SOCKET comm_socket);
+int verDatosTienda2(SOCKET comm_socket);
+int verDatosTienda3(SOCKET comm_socket);
 
 //MENU MATERIALES
 int anyadirMaterial(char *codigo, char *nombre, char *color, float precio, int unidades, char *codigoMarca);
@@ -23,9 +29,6 @@ int editarNombreMaterial(char *codigo_material, char *nombre);
 int editarColorMaterial(char *codigo_material, char *color);
 int editarPrecioMaterial(char *codigo_material, float precio);
 int editarUnidadesMaterial(char *codigo_material, int unidades);
-int verMateriales(SOCKET comm_socket);
-int verCompras(SOCKET comm_socket);
-int verMarcas(SOCKET comm_socket);
 
 //MENU CLIENTE
 int conseguirUnidadesDelMaterial(char* codigo);

@@ -25,11 +25,11 @@ Material::Material(int unidades, char *cod, char *nom, float precio,
 }
 
 void Material::verMaterial() {
-	cout << "CODIGO: " << codigo << endl;
-	cout << "NOMBRE: " << nom << endl;
-	cout << "COLOR: " << color << endl;
-	cout << "PRECIO: " << precio << endl;
-	cout << "MARCA: " << m.getNom() << endl;
+	cout << "CODIGO: " << codigo << " - ";
+	cout << "NOMBRE: " << nom << " - ";
+	cout << "COLOR: " << color << " - ";
+	cout << "PRECIO: " << precio << " - ";
+	cout << "MARCA: " << m.getNom() << " - ";
 	cout << "UNIDADES: " << unidades << endl;
 }
 
