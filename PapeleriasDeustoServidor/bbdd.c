@@ -303,12 +303,13 @@ int registrarUsuario(char *nombre, char *contrasenya, int permiso, int id) {
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "No se pudo insertar en la tabla: %s\n", errmsg);
 		sqlite3_free(errmsg);
+		sqlite3_close(db);
 		return 0;
 	} else {
 		printf("Se ha insertado correctamente.\n");
+		sqlite3_close(db);
 		return 1;
 	}
-	sqlite3_close(db);
 }
 
 int inicioSesionAdmin(char *nombre, char *contrasenya) {
@@ -334,6 +335,7 @@ int inicioSesionAdmin(char *nombre, char *contrasenya) {
 		sqlite3_close(db);
 		return 1;
 	}
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -360,6 +362,7 @@ int inicioSesionCliente(char *nombre, char *contrasenya) {
 		sqlite3_close(db);
 		return 1;
 	}
+	sqlite3_close(db);
 	return 0;
 
 }
@@ -375,6 +378,7 @@ int anyadirMaterial(char *codigo, char *nombre, char *color, float precio,
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");
 		fflush(stdout);
+		sqlite3_close(db);
 		return 0;
 	}
 	sprintf(sql,
@@ -383,6 +387,7 @@ int anyadirMaterial(char *codigo, char *nombre, char *color, float precio,
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
+	sqlite3_close(db);
 
 	return 1;
 }
@@ -406,8 +411,10 @@ int borrarMaterial(char *cod_material) {
 	sqlite3_finalize(stmt);
 
 	if (result == SQLITE_DONE) {
+		sqlite3_close(db);
 		return 1; // Sentencia ejecutada correctamente
 	} else {
+		sqlite3_close(db);
 		return 0; // Error en la ejecución de la sentencia
 	}
 }
@@ -433,8 +440,10 @@ int editarNombreMaterial(char *codigo_material, char *nombre) {
 	sqlite3_finalize(stmt);
 
 	if (result == SQLITE_DONE) {
+		sqlite3_close(db);
 		return 1; // Sentencia ejecutada correctamente
 	} else {
+		sqlite3_close(db);
 		return 0; // Error en la ejecución de la sentencia
 	}
 }
@@ -459,8 +468,10 @@ int editarColorMaterial(char *codigo_material, char *color) {
 	sqlite3_finalize(stmt);
 
 	if (result == SQLITE_DONE) {
+		sqlite3_close(db);
 		return 1; // Sentencia ejecutada correctamente
 	} else {
+		sqlite3_close(db);
 		return 0; // Error en la ejecución de la sentencia
 	}
 }
@@ -486,8 +497,10 @@ int editarPrecioMaterial(char *codigo_material, float precio) {
 	sqlite3_finalize(stmt);
 
 	if (result == SQLITE_DONE) {
+		sqlite3_close(db);
 		return 1; // Sentencia ejecutada correctamente
 	} else {
+		sqlite3_close(db);
 		return 0; // Error en la ejecución de la sentencia
 	}
 }
@@ -513,8 +526,10 @@ int editarUnidadesMaterial(char *codigo_material, int unidades) {
 	sqlite3_finalize(stmt);
 
 	if (result == SQLITE_DONE) {
+		sqlite3_close(db);
 		return 1; // Sentencia ejecutada correctamente
 	} else {
+		sqlite3_close(db);
 		return 0; // Error en la ejecución de la sentencia
 	}
 }
@@ -565,6 +580,7 @@ int verMateriales(SOCKET comm_socket) {
 	sprintf(sendBuff, "FIN");
 	send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_close(db);
 
 	return 0;
 
@@ -643,6 +659,7 @@ int verCompras(SOCKET comm_socket) {
 	sqlite3_finalize(stmt);
 	sprintf(sendBuff, "FIN");
 	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -661,15 +678,15 @@ int verMarcas(SOCKET comm_socket) {
 
 	while (result == SQLITE_ROW) {
 		sprintf(codMarca, "%s", (char*) sqlite3_column_text(stmt, 0));
-		sprintf(nomMarca, "%s", (char*) sqlite3_column_text(stmt, 1));
 
-		sprintf(sendBuff, "%s %s", codMarca, nomMarca);
+		sprintf(sendBuff, "%s", codMarca);
 		send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 		result = sqlite3_step(stmt);
 	}
 	sqlite3_finalize(stmt);
 	sprintf(sendBuff, "FIN");
 	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+	sqlite3_close(db);
 	return 0;
 
 }
@@ -690,6 +707,7 @@ int verHistorial1(SOCKET comm_socket, char *nomPersona) { //BUSCA LA CANTIDAD DE
 	sprintf(sendBuff, "%i", contador);
 	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -701,15 +719,20 @@ int verHistorial2(SOCKET comm_socket, char *nomPersona) {
 	int result, cantidad;
 	result = sqlite3_open("Datos.sqlite", &db);
 	sprintf(sql,
-			"SELECT cod_material, COUNT(*) AS mas_comprado FROM compra where nombre_persona = '%s' GROUP BY cod_material ORDER BY cantidad DESC LIMIT 1",
+			"SELECT cod_material, SUM(cantidad) AS total_comprado FROM compra WHERE nombre_persona = '%s' GROUP BY cod_material ORDER BY total_comprado DESC LIMIT 1",
 			nomPersona);
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
 	result = sqlite3_step(stmt); //Ejecutar la sentencia
-	sprintf(codMat, "%s", (char*) sqlite3_column_text(stmt, 0));
-	cantidad = (int) sqlite3_column_double(stmt, 0);
-	sprintf(sendBuff, "%s %i", codMat, cantidad);
-	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
-	sqlite3_finalize(stmt); //Cerrar la sentencia
+	if (result == SQLITE_ROW) {
+		sprintf(codMat, "%s", (char*) sqlite3_column_text(stmt, 0));
+		cantidad = (int) sqlite3_column_double(stmt, 1);
+		sprintf(sendBuff, "%s %i", codMat, cantidad);
+		send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+		sqlite3_finalize(stmt); //Cerrar la sentencia
+		sqlite3_close(db);
+		return 1;
+	}
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -729,6 +752,7 @@ int verHistorial3(SOCKET comm_socket, char *nomPersona) {
 	sprintf(sendBuff, "%.2f", importe);
 	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -747,6 +771,7 @@ int verDatosTienda1(SOCKET comm_socket) {
 	sprintf(sendBuff, "%i", clientes);
 	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -765,6 +790,7 @@ int verDatosTienda2(SOCKET comm_socket) {
 	sprintf(sendBuff, "%i", compras);
 	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -783,6 +809,34 @@ int verDatosTienda3(SOCKET comm_socket) {
 	sprintf(sendBuff, "%.2f", importeMax);
 	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
 	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_close(db);
+	return 0;
+}
+
+int compraExiste(char *nomPersona) {
+	sqlite3 *db;
+	sqlite3_stmt *stmt;
+	char sql[200];
+	int result;
+	sprintf(sql,
+			"SELECT * FROM compra WHERE nombre_persona = '%s'",
+			nomPersona);
+	result = sqlite3_open("Datos.sqlite", &db);
+
+	if (result != SQLITE_OK) {
+		fprintf(stderr, "No se pudo abrir la base de datos: %s\n",
+				sqlite3_errmsg(db));
+		sqlite3_close(db);
+		return -1;
+	}
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	if (result == SQLITE_ROW) {
+		sqlite3_finalize(stmt); //Cerrar la sentencia
+		sqlite3_close(db);
+		return 1;
+	}
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -800,6 +854,7 @@ int anyadirCompra(char *nombrePersona, char *codigoMat, int cantidad,
 	if (result != SQLITE_OK) {
 		printf("Error al abrir la BBDD\n");
 		fflush(stdout);
+		sqlite3_close(db);
 		return 0;
 	}
 	sprintf(sql, "INSERT INTO compra VALUES ('%ld', '%s', '%s', %i, %.2f)",
@@ -807,7 +862,7 @@ int anyadirCompra(char *nombrePersona, char *codigoMat, int cantidad,
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(db);
 	return 1;
 }
 
@@ -845,7 +900,7 @@ int borrarDatosMateriales() {
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -865,7 +920,7 @@ int borrarDatosCompras() {
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -885,7 +940,7 @@ int borrarDatosPersonas() {
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -905,7 +960,7 @@ int borrarDatosMarca() {
 	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -943,6 +998,7 @@ int comprobacionExiste(char *codigo, char *nombre, char *color,
 		sqlite3_close(db);
 		return 1; //EXISTE
 	}
+	sqlite3_close(db);
 	return 0; //NO EXISTE
 
 }
@@ -970,6 +1026,7 @@ int comprobacionUnidadesExisten(char *codigo, int unidades) {
 		sqlite3_close(db);
 		return 1; //EXISTE
 	}
+	sqlite3_close(db);
 	return 0; //NO EXISTE
 
 }
@@ -995,6 +1052,7 @@ int datosMaterialesExisten() {
 		sqlite3_close(db);
 		return 1;
 	}
+	sqlite3_close(db);
 	return 0;
 
 }
@@ -1020,6 +1078,7 @@ int datosComprasExisten() {
 		sqlite3_close(db);
 		return 1;
 	}
+	sqlite3_close(db);
 	return 0;
 
 }
@@ -1045,6 +1104,7 @@ int datosMarcasExisten() {
 		sqlite3_close(db);
 		return 1;
 	}
+	sqlite3_close(db);
 	return 0;
 
 }
@@ -1074,6 +1134,7 @@ int conseguirUnidadesDelMaterial(char *codigo) {
 
 		return unidades;
 	}
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -1102,6 +1163,7 @@ float conseguirPrecioMaterial(char *codigoMat) {
 
 		return precio;
 	}
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -1133,7 +1195,7 @@ int guardarDatosPersonas() {
 
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -1163,7 +1225,7 @@ int guardarDatosMateriales() {
 
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(db);
 	return 0;
 }
 
@@ -1192,7 +1254,7 @@ int guardarDatosCompras() {
 
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
-
+	sqlite3_close(db);
 	return 0;
 }
 

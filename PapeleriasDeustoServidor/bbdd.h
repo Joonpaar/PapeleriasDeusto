@@ -59,6 +59,7 @@ int datosMaterialesExisten();
 int datosComprasExisten();
 int datosMarcasExisten();
 int getNumPersonas();
+int compraExiste(char* nomPersona);
 
 //GUARDADO DE DATOS
 int guardarDatosPersonas();

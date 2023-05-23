@@ -357,6 +357,21 @@ int main(int argc, char *argv[]) {
 											&precioMat, &unidadesMaterial,
 											codMarcaMaterial, nomMarca);
 
+									if (strcmp(codMarcaMaterial, "000A") == 0) {
+										strcpy(nomMarca, "BIC");
+									} else if (strcmp(codMarcaMaterial, "111B")
+											== 0) {
+										strcpy(nomMarca, "MILAN");
+									} else if (strcmp(codMarcaMaterial, "222C")
+											== 0) {
+										strcpy(nomMarca, "PILOT");
+									} else if (strcmp(codMarcaMaterial, "333D")
+											== 0) {
+										strcpy(nomMarca, "OXFORD");
+									} else {
+										strcpy(nomMarca, "CERVANTES");
+									}
+
 									Marca *marca = new Marca(nomMarca,
 											codMarcaMaterial);
 
@@ -377,6 +392,20 @@ int main(int argc, char *argv[]) {
 											&unidadesMaterial, codMarcaMaterial,
 											nomMarca, &unidadesCompra,
 											&importe);
+									if (strcmp(codMarcaMaterial, "000A") == 0) {
+										strcpy(nomMarca, "BIC");
+									} else if (strcmp(codMarcaMaterial, "111B")
+											== 0) {
+										strcpy(nomMarca, "MILAN");
+									} else if (strcmp(codMarcaMaterial, "222C")
+											== 0) {
+										strcpy(nomMarca, "PILOT");
+									} else if (strcmp(codMarcaMaterial, "333D")
+											== 0) {
+										strcpy(nomMarca, "OXFORD");
+									} else {
+										strcpy(nomMarca, "CERVANTES");
+									}
 
 									Persona *p = new Persona(nom, contrasenya);
 									Marca *m = new Marca(nomMarca,
@@ -394,9 +423,21 @@ int main(int argc, char *argv[]) {
 							case '6':
 								recv(s, recvBuff, sizeof(recvBuff), 0);
 								while (strncmp(recvBuff, "FIN", 3) != 0) {
-									sscanf(recvBuff, "%s %s", codMarcaMaterial,
-											nomMarca);
-
+									sscanf(recvBuff, "%s", codMarcaMaterial);
+									if (strcmp(codMarcaMaterial, "000A") == 0) {
+										strcpy(nomMarca, "BIC");
+									} else if (strcmp(codMarcaMaterial, "111B")
+											== 0) {
+										strcpy(nomMarca, "MILAN");
+									} else if (strcmp(codMarcaMaterial, "222C")
+											== 0) {
+										strcpy(nomMarca, "PILOT");
+									} else if (strcmp(codMarcaMaterial, "333D")
+											== 0) {
+										strcpy(nomMarca, "OXFORD");
+									} else {
+										strcpy(nomMarca, "CERVANTES");
+									}
 									Marca *m = new Marca(nomMarca,
 											codMarcaMaterial);
 									m->verMarca();
@@ -514,7 +555,9 @@ int main(int argc, char *argv[]) {
 							case '2':
 								sprintf(sendBuff, "%s", nom);
 								send(s, sendBuff, sizeof(sendBuff), 0);
-
+								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+								sscanf(recvBuff, "%d", &resul);
+								if(resul==1){
 								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 								sscanf(recvBuff, "%d", &resul);
 
@@ -539,6 +582,9 @@ int main(int argc, char *argv[]) {
 								sscanf(recvBuff, "%f", &importe);
 								cout << "TU COMPRA MAS CARA HA SIDO DE "
 										<< importe << "€" << endl;
+								}else{
+									cout<<"NO HAS HECHO NINGUNA COMPRA, NO HAY DATOS"<<endl;
+								}
 								break;
 							case '3':
 								break;

@@ -13,3 +13,8 @@
  Contraseña: admin
  Permiso: 1
  ID: 2
+[Usuario]
+ Nombre: a
+ Contraseña: a
+ Permiso: 0
+ ID: 3

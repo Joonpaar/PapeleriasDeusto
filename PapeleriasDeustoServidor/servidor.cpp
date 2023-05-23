@@ -391,9 +391,20 @@ int main(int argc, char *argv[]) {
 									recv(comm_socket, recvBuff,
 											sizeof(recvBuff), 0); //Recibe el nombre
 									sscanf(recvBuff, "%s", nom);
-									verHistorial1(comm_socket, nom);
-									verHistorial2(comm_socket, nom);
-									verHistorial3(comm_socket, nom);
+									if (compraExiste(nom) == 1) {
+										resul = 1;
+										sprintf(sendBuff, "%d", resul);
+										send(comm_socket, sendBuff,
+												sizeof(sendBuff), 0);
+										verHistorial1(comm_socket, nom);
+										verHistorial2(comm_socket, nom);
+										verHistorial3(comm_socket, nom);
+									} else {
+										resul = 0;
+										sprintf(sendBuff, "%d", resul);
+										send(comm_socket, sendBuff,
+												sizeof(sendBuff), 0);
+									}
 									break;
 								case '3':
 									break;
