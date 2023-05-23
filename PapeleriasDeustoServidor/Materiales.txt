@@ -1,2 +1,14 @@
-10A Boli Azul 0.500000 80 000A
-20B Subrayador Naranja 1.000000 83 111B
+[MATERIAL]
+ Codigo: 10A
+ Nombre: Boli
+ Color: Azul
+ Precio: 0.500000
+ Unidades: 60
+ Marca: 000A
+[MATERIAL]
+ Codigo: 20B
+ Nombre: Subrayador
+ Color: Naranja
+ Precio: 1.000000
+ Unidades: 83
+ Marca: 111B

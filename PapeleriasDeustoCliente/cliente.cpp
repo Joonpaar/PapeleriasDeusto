@@ -66,7 +66,7 @@ char menuAdministrador() {
 	cout << "6. ANALISIS DE MARCAS" << endl;
 	cout << "7. DATOS TIENDA" << endl;
 	cout << "0. CERRAR SESION" << endl;
-	cout << "Elige una opcion: ";
+	cout << "Elige una opcion: " << endl;
 	cin >> opcion;
 	return opcion;
 }
@@ -90,10 +90,11 @@ char menuCliente() {
 	cout << "" << endl;
 	cout << "MENU CLIENTE" << endl;
 	cout << "1. COMPRAR" << endl;
-	cout << "2. HISTORIAL" << endl;
-	cout << "3. ESTADISTICAS" << endl;
+	cout << "2. ESTADISTICAS" << endl;
+	cout << "3. HISTORIAL" << endl;
 	cout << "0. CERRAR SESION" << endl;
-	cout << "Elige una opcion: ";
+	cout << "Elige una opcion: " << endl;
+	;
 	cin >> opcion;
 	return opcion;
 }
@@ -144,7 +145,7 @@ int main(int argc, char *argv[]) {
 	/*EMPIEZA EL PROGRAMA DEL CLIENTE*/
 	char opcion, opcionA, opcionC, opcionC2, opcionA2, opcionA3;
 	char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
-			codMarcaMaterial[10], nomMarca[10], nomPersona[20], contrasenya[20];
+			codMarcaMaterial[10], nomMarca[10], contrasenya[20], nomPersona[20];
 	int resul, unidadesMaterial, ticket, unidadesCompra, numClientes,
 			numCompras;
 	float precioMat, importe, importeMax;
@@ -557,39 +558,57 @@ int main(int argc, char *argv[]) {
 								send(s, sendBuff, sizeof(sendBuff), 0);
 								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 								sscanf(recvBuff, "%d", &resul);
-								if(resul==1){
-								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
-								sscanf(recvBuff, "%d", &resul);
-
 								if (resul == 1) {
-									cout << "HAS COMPRADO " << resul
-											<< " VEZ EN LA TIENDA" << endl;
+									recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
+									sscanf(recvBuff, "%d", &resul);
+
+									if (resul == 1) {
+										cout << "HAS COMPRADO " << resul
+												<< " VEZ EN LA TIENDA" << endl;
+									} else {
+										cout << "HAS COMPRADO " << resul
+												<< " VECES EN LA TIENDA"
+												<< endl;
+									}
+
+									recv(s, recvBuff, sizeof(recvBuff), 0);
+									sscanf(recvBuff, "%s %i", codMat,
+											&unidadesCompra);
+									cout
+											<< "EL MATERIAL QUE MAS HAS COMPRADO HA SIDO EL "
+											<< codMat
+											<< " CON UNA CANTIDAD TOTAL DE "
+											<< unidadesCompra << " VECES"
+											<< endl;
+
+									recv(s, recvBuff, sizeof(recvBuff), 0);
+									sscanf(recvBuff, "%f", &importe);
+									cout << "TU COMPRA MAS CARA HA SIDO DE "
+											<< importe << "€" << endl;
 								} else {
-									cout << "HAS COMPRADO " << resul
-											<< " VECES EN LA TIENDA" << endl;
-								}
-
-								recv(s, recvBuff, sizeof(recvBuff), 0);
-								sscanf(recvBuff, "%s %i", codMat,
-										&unidadesCompra);
-								cout
-										<< "EL MATERIAL QUE MAS HAS COMPRADO HA SIDO EL "
-										<< codMat
-										<< " CON UNA CANTIDAD TOTAL DE "
-										<< unidadesCompra << " VECES" << endl;
-
-								recv(s, recvBuff, sizeof(recvBuff), 0);
-								sscanf(recvBuff, "%f", &importe);
-								cout << "TU COMPRA MAS CARA HA SIDO DE "
-										<< importe << "€" << endl;
-								}else{
-									cout<<"NO HAS HECHO NINGUNA COMPRA, NO HAY DATOS"<<endl;
+									cout
+											<< "NO HAS HECHO NINGUNA COMPRA, NO HAY DATOS"
+											<< endl;
 								}
 								break;
 							case '3':
+								sprintf(sendBuff, "%s", nom);
+								send(s, sendBuff, sizeof(sendBuff), 0);
+
+								recv(s, recvBuff, sizeof(recvBuff), 0);
+								sscanf(recvBuff, "%s %s", nomPersona,
+										contrasenya);
+								cout<<"TU NOMBRE DE USUARIO ES "<<nomPersona<<" Y TU CONTRASEÑA ES "<<contrasenya<<endl;
+								cout<<"-----SEGURIDAD DE CUENTA-----"<<endl;
+								if(strlen(contrasenya) < 8){
+									cout<<"RECOMENDAMOS UNA CONTRASENYA MAS LARGA!"<<endl;
+								}else{
+									cout<<"TU CONTRASENYA ES LO SUFICIENTE PARA ESTAR SEGURO!"<<endl;
+								}
 								break;
 							case '0':
 								cout << "Agur" << endl;
+								break;
 							}
 						} while (opcionC2 != '0');
 					} else {

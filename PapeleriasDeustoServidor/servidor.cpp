@@ -98,8 +98,7 @@ int main(int argc, char *argv[]) {
 	 }*/
 	char opcion, opcionC, opcionA, opcionA2, opcion2C, opcionA3;
 	char nomC[20], conC[20], nomA[20], conA[20];
-	char nom[20], con[20], codMat[20], nomMat[20], colorMat[20],
-			codMarcaMaterial[10];
+	char nom[20], codMat[20], nomMat[20], colorMat[20], codMarcaMaterial[10];
 	int resul, unidadesMaterial;
 	float precioMaterial;
 
@@ -396,9 +395,9 @@ int main(int argc, char *argv[]) {
 										sprintf(sendBuff, "%d", resul);
 										send(comm_socket, sendBuff,
 												sizeof(sendBuff), 0);
-										verHistorial1(comm_socket, nom);
-										verHistorial2(comm_socket, nom);
-										verHistorial3(comm_socket, nom);
+										verEstadisticas1(comm_socket, nom);
+										verEstadisticas2(comm_socket, nom);
+										verEstadisticas3(comm_socket, nom);
 									} else {
 										resul = 0;
 										sprintf(sendBuff, "%d", resul);
@@ -407,6 +406,10 @@ int main(int argc, char *argv[]) {
 									}
 									break;
 								case '3':
+									recv(comm_socket, recvBuff,
+											sizeof(recvBuff), 0); //Recibe el nombre
+									sscanf(recvBuff, "%s", nom);
+									verDatosCuenta(comm_socket, nom);
 									break;
 								case '0':
 									break;

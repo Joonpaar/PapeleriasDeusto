@@ -34,9 +34,10 @@ int editarUnidadesMaterial(char *codigo_material, int unidades);
 int conseguirUnidadesDelMaterial(char* codigo);
 int anyadirCompra(char* nombrePersona, char* codigoMat, int cantidad, float importe);
 float conseguirPrecioMaterial(char *codigoMat);
-int verHistorial1(SOCKET comm_socket, char* nomPersona);
-int verHistorial2(SOCKET comm_socket, char* nomPersona);
-int verHistorial3(SOCKET comm_socket, char *nomPersona);
+int verEstadisticas1(SOCKET comm_socket, char* nomPersona);
+int verEstadisticas2(SOCKET comm_socket, char* nomPersona);
+int verEstadisticas3(SOCKET comm_socket, char *nomPersona);
+int verDatosCuenta(SOCKET comm_socket, char *nomPersona);
 
 //DATOS
 void cargarMarcas(char marcas[][50]);

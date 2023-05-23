@@ -125,7 +125,7 @@ int importarMateriales() {
 
 	pf = fopen("Materiales.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%s %s %s %f %i %s", codigo, nombre, color, &precio,
+		while (fscanf(pf, "[MATERIAL]\n Codigo: %s\n Nombre: %s\n Color: %s\n Precio: %f\n Unidades: %i\n Marca: %s\n", codigo, nombre, color, &precio,
 				&unidades, codigoMarca) != EOF) {
 			sprintf(sql,
 					"INSERT INTO material VALUES ('%s', '%s', '%s', %.2f, %i, '%s')",
@@ -261,7 +261,7 @@ int importarCompras() {
 
 	pf = fopen("Compras.txt", "r");
 	if (pf != (FILE*) NULL) {
-		while (fscanf(pf, "%i %s %s %i %f \n", &ticket, nombreProducto,
+		while (fscanf(pf, "[COMPRA]\n Ticket: %i\n Usuario: %s\n Material: %s\n Cantidad: %i\n Importe: %f\n", &ticket, nombreProducto,
 				codigoMarca, &cantidad, &importe) != EOF) {
 			sprintf(sql, "INSERT INTO compra VALUES (%i, '%s', '%s', %i , %f)",
 					ticket, nombreProducto, codigoMarca, cantidad, importe);
@@ -669,7 +669,7 @@ int verMarcas(SOCKET comm_socket) {
 	sqlite3_stmt *stmt;
 	char sql[200];
 	int result;
-	char codMarca[20], nomMarca[20];
+	char codMarca[20];
 
 	result = sqlite3_open("Datos.sqlite", &db);
 	sprintf(sql, "select * from marca");
@@ -691,7 +691,7 @@ int verMarcas(SOCKET comm_socket) {
 
 }
 
-int verHistorial1(SOCKET comm_socket, char *nomPersona) { //BUSCA LA CANTIDAD DE COMPRAS TOTALES DEL USUARIO
+int verEstadisticas1(SOCKET comm_socket, char *nomPersona) { //BUSCA LA CANTIDAD DE COMPRAS TOTALES DEL USUARIO
 	sqlite3 *db;
 	char sendBuff[512];
 	sqlite3_stmt *stmt;
@@ -711,7 +711,7 @@ int verHistorial1(SOCKET comm_socket, char *nomPersona) { //BUSCA LA CANTIDAD DE
 	return 0;
 }
 
-int verHistorial2(SOCKET comm_socket, char *nomPersona) {
+int verEstadisticas2(SOCKET comm_socket, char *nomPersona) {
 	sqlite3 *db;
 	char sendBuff[512], codMat[20];
 	sqlite3_stmt *stmt;
@@ -736,7 +736,7 @@ int verHistorial2(SOCKET comm_socket, char *nomPersona) {
 	return 0;
 }
 
-int verHistorial3(SOCKET comm_socket, char *nomPersona) {
+int verEstadisticas3(SOCKET comm_socket, char *nomPersona) {
 	sqlite3 *db;
 	char sendBuff[512];
 	sqlite3_stmt *stmt;
@@ -813,13 +813,31 @@ int verDatosTienda3(SOCKET comm_socket) {
 	return 0;
 }
 
+int verDatosCuenta(SOCKET comm_socket, char *nomPersona) {
+	sqlite3 *db;
+	char sendBuff[512];
+	sqlite3_stmt *stmt;
+	char sql[200], nom[20], con[20];
+	int result;
+	result = sqlite3_open("Datos.sqlite", &db);
+	sprintf(sql, "SELECT * from persona where nombre = '%s'",
+			nomPersona);
+	sqlite3_prepare_v2(db, sql, -1, &stmt, NULL); //Preparar la sentencia
+	result = sqlite3_step(stmt); //Ejecutar la sentencia
+	sprintf(nom, "%s", (char*) sqlite3_column_text(stmt, 0));
+	sprintf(con, "%s", (char*) sqlite3_column_text(stmt, 1));
+	sprintf(sendBuff, "%s %s", nom, con);
+	send(comm_socket, sendBuff, strlen(sendBuff) + 1, 0);
+	sqlite3_finalize(stmt); //Cerrar la sentencia
+	sqlite3_close(db);
+	return 0;
+}
 int compraExiste(char *nomPersona) {
 	sqlite3 *db;
 	sqlite3_stmt *stmt;
 	char sql[200];
 	int result;
-	sprintf(sql,
-			"SELECT * FROM compra WHERE nombre_persona = '%s'",
+	sprintf(sql, "SELECT * FROM compra WHERE nombre_persona = '%s'",
 			nomPersona);
 	result = sqlite3_open("Datos.sqlite", &db);
 
@@ -1216,7 +1234,7 @@ int guardarDatosMateriales() {
 
 	FILE *f = fopen("Materiales.txt", "w"); // Abre el archivo para escritura y borra el contenido previo
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
-		fprintf(f, "%s %s %s %f %i %s\n", sqlite3_column_text(stmt, 0),
+		fprintf(f, "[MATERIAL]\n Codigo: %s\n Nombre: %s\n Color: %s\n Precio: %f\n Unidades: %i\n Marca: %s\n", sqlite3_column_text(stmt, 0),
 				sqlite3_column_text(stmt, 1), sqlite3_column_text(stmt, 2),
 				sqlite3_column_double(stmt, 3), sqlite3_column_int(stmt, 4),
 				sqlite3_column_text(stmt, 5));
@@ -1246,7 +1264,7 @@ int guardarDatosCompras() {
 
 	FILE *f = fopen("Compras.txt", "w"); // Abre el archivo para escritura y borra el contenido previo
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
-		fprintf(f, "%i %s %s %i %f \n", sqlite3_column_int(stmt, 0),
+		fprintf(f, "[COMPRA]\n Ticket: %i\n Usuario: %s\n Material: %s\n Cantidad: %i\n Importe: %f\n", sqlite3_column_int(stmt, 0),
 				sqlite3_column_text(stmt, 1), sqlite3_column_text(stmt, 2),
 				sqlite3_column_int(stmt, 3), sqlite3_column_double(stmt, 4));
 	}

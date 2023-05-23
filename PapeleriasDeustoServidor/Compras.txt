@@ -1,5 +1,36 @@
-459294470 Jon 10A 150 75.000000 
-1144191692 Imanol 10A 4 2.000000 
-1144197868 Imanol 20B 67 67.000000 
-1204568136 Jon 10A 40 20.000000 
-1229226077 a 10A 1 0.500000 
+[COMPRA]
+ Ticket: 459294470
+ Usuario: Jon
+ Material: 10A
+ Cantidad: 150
+ Importe: 75.000000
+[COMPRA]
+ Ticket: 1144191692
+ Usuario: Imanol
+ Material: 10A
+ Cantidad: 4
+ Importe: 2.000000
+[COMPRA]
+ Ticket: 1144197868
+ Usuario: Imanol
+ Material: 20B
+ Cantidad: 67
+ Importe: 67.000000
+[COMPRA]
+ Ticket: 1204568136
+ Usuario: Jon
+ Material: 10A
+ Cantidad: 40
+ Importe: 20.000000
+[COMPRA]
+ Ticket: 1229226077
+ Usuario: a
+ Material: 10A
+ Cantidad: 1
+ Importe: 0.500000
+[COMPRA]
+ Ticket: 1240167815
+ Usuario: Imanol
+ Material: 10A
+ Cantidad: 20
+ Importe: 10.000000
