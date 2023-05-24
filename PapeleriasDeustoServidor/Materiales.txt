@@ -3,7 +3,7 @@
  Nombre: Boli
  Color: Azul
  Precio: 0.500000
- Unidades: 60
+ Unidades: 25
  Marca: 000A
 [MATERIAL]
  Codigo: 20B

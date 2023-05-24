@@ -34,3 +34,15 @@
  Material: 10A
  Cantidad: 20
  Importe: 10.000000
+[COMPRA]
+ Ticket: 1293217176
+ Usuario: Jon
+ Material: 10A
+ Cantidad: 10
+ Importe: 5.000000
+[COMPRA]
+ Ticket: 1293407267
+ Usuario: a
+ Material: 10A
+ Cantidad: 25
+ Importe: 12.500000

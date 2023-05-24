@@ -169,10 +169,8 @@ int main(int argc, char *argv[]) {
 					send(s, sendBuff, sizeof(sendBuff), 0); //Envio el nombre al servidor
 					sprintf(sendBuff, "%s", con);
 					send(s, sendBuff, sizeof(sendBuff), 0); //Envio la contraseña al servidor
-					cout << "ENVIO" << endl;
 					recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 					sscanf(recvBuff, "%d", &resul);
-					cout << "RESULTADO: " << resul << endl;
 					if (resul == 1) {
 						do {
 							opcionA2 = menuAdministrador();
@@ -208,7 +206,6 @@ int main(int argc, char *argv[]) {
 
 								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 								sscanf(recvBuff, "%d", &resul);
-								cout << "RESULTADO : " << resul << endl;
 								if (resul == 1) {
 									cout << "Producto añadido correctamente!"
 											<< endl;
@@ -227,7 +224,6 @@ int main(int argc, char *argv[]) {
 
 								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 								sscanf(recvBuff, "%d", &resul);
-								cout << "RESULTADO : " << resul << endl;
 
 								if (resul == 1) {
 									cout << "Producto borrado correctamente!"
@@ -263,7 +259,6 @@ int main(int argc, char *argv[]) {
 											recv(s, recvBuff, sizeof(recvBuff),
 													0); //Recibe el resultado del Inicio de Sesion
 											sscanf(recvBuff, "%d", &resul);
-											cout << resul << endl;
 											if (resul == 1) {
 												cout
 														<< "Nombre del material editado correctamente!"
@@ -284,7 +279,6 @@ int main(int argc, char *argv[]) {
 											recv(s, recvBuff, sizeof(recvBuff),
 													0); //Recibe el resultado del Inicio de Sesion
 											sscanf(recvBuff, "%d", &resul);
-											cout << resul << endl;
 											if (resul == 1) {
 												cout
 														<< "Color del material editado correctamente!"
@@ -464,6 +458,9 @@ int main(int argc, char *argv[]) {
 							case '0':
 								cout << "AGUR" << endl;
 								break;
+							default:
+								cout << "No existe esta opcion" << endl;
+								break;
 							}
 						} while (opcionA2 != '0');
 					} else {
@@ -482,15 +479,16 @@ int main(int argc, char *argv[]) {
 
 					recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 					sscanf(recvBuff, "%d", &resul);
-					cout << "RESULTADO: " << resul << endl;
 					if (resul == 1) {
 						cout << "Admin Registrado Correctamente!" << endl;
 					} else {
 						cout << "Error al crear admin!" << endl;
 					}
 					break;
-
 				case '0':
+					break;
+				default:
+					cout << "No existe esta opcion" << endl;
 					break;
 				}
 
@@ -514,7 +512,6 @@ int main(int argc, char *argv[]) {
 
 					recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 					sscanf(recvBuff, "%d", &resul);
-					cout << "RESULTADO: " << resul << endl;
 					if (resul == 1) {
 						do {
 							opcionC2 = menuCliente();
@@ -531,7 +528,6 @@ int main(int argc, char *argv[]) {
 
 								recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 								sscanf(recvBuff, "%d", &resul);
-								cout << "RESULTADO: " << resul << endl;
 								if (resul == 1) {
 									cout
 											<< "INDIQUE LA CANTIDAD A COMPRAR DEL MATERIAL "
@@ -551,6 +547,8 @@ int main(int argc, char *argv[]) {
 										cout << "Error al comprar material"
 												<< endl;
 									}
+								}else{
+									cout<<"NO EXISTE ESE MATERIAL"<<endl;
 								}
 								break;
 							case '2':
@@ -598,16 +596,25 @@ int main(int argc, char *argv[]) {
 								recv(s, recvBuff, sizeof(recvBuff), 0);
 								sscanf(recvBuff, "%s %s", nomPersona,
 										contrasenya);
-								cout<<"TU NOMBRE DE USUARIO ES "<<nomPersona<<" Y TU CONTRASEÑA ES "<<contrasenya<<endl;
-								cout<<"-----SEGURIDAD DE CUENTA-----"<<endl;
-								if(strlen(contrasenya) < 8){
-									cout<<"RECOMENDAMOS UNA CONTRASENYA MAS LARGA!"<<endl;
-								}else{
-									cout<<"TU CONTRASENYA ES LO SUFICIENTE PARA ESTAR SEGURO!"<<endl;
+								cout << "TU NOMBRE DE USUARIO ES " << nomPersona
+										<< " Y TU CONTRASEÑA ES " << contrasenya
+										<< endl;
+								cout << "-----SEGURIDAD DE CUENTA-----" << endl;
+								if (strlen(contrasenya) < 8) {
+									cout
+											<< "RECOMENDAMOS UNA CONTRASENYA MAS LARGA!"
+											<< endl;
+								} else {
+									cout
+											<< "TU CONTRASENYA ES LO SUFICIENTE PARA ESTAR SEGURO!"
+											<< endl;
 								}
 								break;
 							case '0':
 								cout << "Agur" << endl;
+								break;
+							default:
+								cout << "No existe esta opcion" << endl;
 								break;
 							}
 						} while (opcionC2 != '0');
@@ -627,7 +634,6 @@ int main(int argc, char *argv[]) {
 
 					recv(s, recvBuff, sizeof(recvBuff), 0); //Recibe el resultado del Inicio de Sesion
 					sscanf(recvBuff, "%d", &resul);
-					cout << "RESULTADO: " << resul << endl;
 					if (resul == 1) {
 						cout << "Cliente Registrado Correctamente!" << endl;
 					} else {
@@ -638,6 +644,9 @@ int main(int argc, char *argv[]) {
 				case '0':
 					cout << "AGUR" << endl;
 					break;
+				default:
+					cout << "No existe esta opcion" << endl;
+					break;
 				}
 
 			} while (opcionC != '0');
@@ -646,7 +655,7 @@ int main(int argc, char *argv[]) {
 			cout << "AGUR" << endl;
 			break;
 		default:
-			cout << "La opci�n seleccionada no es correcta" << endl;
+			cout << "La opcion seleccionada no es correcta" << endl;
 			break;
 		}
 	} while (opcion != '0');

@@ -18,3 +18,8 @@
  Contraseña: a
  Permiso: 0
  ID: 3
+[Usuario]
+ Nombre: Final
+ Contraseña: final
+ Permiso: 1
+ ID: 4

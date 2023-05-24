@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include "logger.h"
 extern "C" {
 #include "bbdd.h"
 }
@@ -92,17 +93,15 @@ int main(int argc, char *argv[]) {
 	int fin = 0;
 	crearTablas();
 	importarDatos();
-
-	/*or(int i=0;i<5;i++){
-	 printf("%s\n",marcas[i]);fflush(stdout);
-	 }*/
 	char opcion, opcionC, opcionA, opcionA2, opcion2C, opcionA3;
 	char nomC[20], conC[20], nomA[20], conA[20];
 	char nom[20], codMat[20], nomMat[20], colorMat[20], codMarcaMaterial[10];
 	int resul, unidadesMaterial;
 	float precioMaterial;
+	logger l;
 
 	do {
+		l.mensajeLog("CONEXION INICIADA");
 		/*EMPIEZA EL PROGRAMA DEL SERVIDOR*/
 		do {
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
@@ -120,6 +119,7 @@ int main(int argc, char *argv[]) {
 						sprintf(conA, "%s", recvBuff);
 						if (inicioSesionAdmin(nomA, conA) == 1) {
 							resul = 1;
+							l.mensajeLog("SESION INICIADA DEL ADMIN");
 							sprintf(sendBuff, "%d", resul);
 							send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 							do {
@@ -159,8 +159,11 @@ int main(int argc, char *argv[]) {
 												unidadesMaterial,
 												codMarcaMaterial);
 										resul = 1;
+										l.mensajeLog("NUEVO PRODUCTO AÑADIDO");
 									} else {
 										resul = 0;
+										l.errorLog(
+												"ERROR AL AÑADIR NUEVO PRODUCTO");
 									}
 
 									sprintf(sendBuff, "%d", resul);
@@ -176,8 +179,11 @@ int main(int argc, char *argv[]) {
 											== 1) {
 										borrarMaterial(codMat);
 										resul = 1;
+										l.mensajeLog("PRODUCTO BORRADO");
 									} else {
 										resul = 0;
+										l.errorLog(
+												"ERROR EN BORRADO DE PRODUCTO");
 									}
 									sprintf(sendBuff, "%d", resul);
 									send(comm_socket, sendBuff,
@@ -211,8 +217,12 @@ int main(int argc, char *argv[]) {
 												if (editarNombreMaterial(codMat,
 														nomMat) == 1) {
 													resul = 1;
+													l.mensajeLog(
+															"NOMBRE PRODUCTO EDITADO");
 												} else {
 													resul = 0;
+													l.errorLog(
+															"ERROR EN EDICION DE NOMBRE");
 												}
 												sprintf(sendBuff, "%d", resul);
 												send(comm_socket, sendBuff,
@@ -226,8 +236,12 @@ int main(int argc, char *argv[]) {
 												if (editarColorMaterial(codMat,
 														colorMat) == 1) {
 													resul = 1;
+													l.mensajeLog(
+															"COLOR PRODUCTO EDITADO");
 												} else {
 													resul = 0;
+													l.errorLog(
+															"ERROR EN EDICION DE COLOR");
 												}
 												sprintf(sendBuff, "%d", resul);
 												send(comm_socket, sendBuff,
@@ -241,8 +255,12 @@ int main(int argc, char *argv[]) {
 												if (editarPrecioMaterial(codMat,
 														precioMaterial) == 1) {
 													resul = 1;
+													l.mensajeLog(
+															"PRECIO PRODUCTO EDITADO");
 												} else {
 													resul = 0;
+													l.errorLog(
+															"ERROR EN EDICION DE PRECIO");
 												}
 												sprintf(sendBuff, "%d", resul);
 												send(comm_socket, sendBuff,
@@ -258,8 +276,12 @@ int main(int argc, char *argv[]) {
 														unidadesMaterial)
 														== 1) {
 													resul = 1;
+													l.mensajeLog(
+															"UNIDADES PRODUCTO EDITADO");
 												} else {
 													resul = 0;
+													l.errorLog(
+															"ERROR EN EDICION DE UNIDADES");
 												}
 												sprintf(sendBuff, "%d", resul);
 												send(comm_socket, sendBuff,
@@ -273,17 +295,21 @@ int main(int argc, char *argv[]) {
 									}
 								case '4':
 									verMateriales(comm_socket);
+									l.mensajeLog("VISUALIZAR PRODUCTOS");
 									break;
 								case '5':
 									verCompras(comm_socket);
+									l.mensajeLog("VISUALIZAR COMPRAS");
 									break;
 								case '6':
 									verMarcas(comm_socket);
+									l.mensajeLog("VISUALIZAR MARCAS");
 									break;
 								case '7':
 									verDatosTienda1(comm_socket);
 									verDatosTienda2(comm_socket);
 									verDatosTienda3(comm_socket);
+									l.mensajeLog("VISUALIZAR DATOS GENERALES");
 									break;
 								case '0':
 									break;
@@ -291,6 +317,7 @@ int main(int argc, char *argv[]) {
 							} while (opcionA2 != '0');
 						} else {
 							resul = 0;
+							l.errorLog("ERROR EN INICIO SESION ADMIN");
 							sprintf(sendBuff, "%d", resul);
 							send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 						}
@@ -303,8 +330,10 @@ int main(int argc, char *argv[]) {
 						if (registrarUsuario(nomA, conA, 1, getNumPersonas())
 								== 1) {
 							resul = 1;
+							l.mensajeLog("REGISTRO ADMIN");
 						} else {
 							resul = 0;
+							l.errorLog("ERROR EN REGISTRO ADMIN");
 						}
 						sprintf(sendBuff, "%d", resul);
 						send(comm_socket, sendBuff, sizeof(sendBuff), 0); //Le env�a al cliente 1,2,0
@@ -312,7 +341,6 @@ int main(int argc, char *argv[]) {
 					case '0':
 						break;
 					default:
-						cout << "No existe opcion" << endl;
 						break;
 					}
 				} while (opcionA != '0');
@@ -329,8 +357,10 @@ int main(int argc, char *argv[]) {
 						sprintf(conC, "%s", recvBuff);
 						if (inicioSesionCliente(nomC, conC) == 1) {
 							resul = 1;
+							l.mensajeLog("INICIO SESION CLIENTE");
 						} else {
 							resul = 0;
+							l.errorLog("ERROR EN INICIO SESION CLIENTE");
 						}
 						sprintf(sendBuff, "%d", resul);
 						send(comm_socket, sendBuff, sizeof(sendBuff), 0); //Le env�a al cliente 1,2,0
@@ -378,8 +408,10 @@ int main(int argc, char *argv[]) {
 											anyadirCompra(nomC, codMat,
 													unidadesMaterial,
 													precioAPagar);
+											l.mensajeLog("COMPRA DE CLIENTE REALIZADA");
 										} else {
 											resul = 0;
+											l.errorLog("ERRROR EN COMPRA DE CLIENTE");
 										}
 										sprintf(sendBuff, "%d", resul);
 										send(comm_socket, sendBuff,
@@ -392,6 +424,8 @@ int main(int argc, char *argv[]) {
 									sscanf(recvBuff, "%s", nom);
 									if (compraExiste(nom) == 1) {
 										resul = 1;
+										l.mensajeLog(
+												"COMPRAS DE CLIENTE VISUALIZADAS");
 										sprintf(sendBuff, "%d", resul);
 										send(comm_socket, sendBuff,
 												sizeof(sendBuff), 0);
@@ -400,6 +434,8 @@ int main(int argc, char *argv[]) {
 										verEstadisticas3(comm_socket, nom);
 									} else {
 										resul = 0;
+										l.errorLog(
+												"ERROR EN VISUALIZAR COMPRAS DE CLIENTE");
 										sprintf(sendBuff, "%d", resul);
 										send(comm_socket, sendBuff,
 												sizeof(sendBuff), 0);
@@ -410,6 +446,7 @@ int main(int argc, char *argv[]) {
 											sizeof(recvBuff), 0); //Recibe el nombre
 									sscanf(recvBuff, "%s", nom);
 									verDatosCuenta(comm_socket, nom);
+									l.mensajeLog("CUENTA VISUALIZADA");
 									break;
 								case '0':
 									break;
@@ -425,8 +462,10 @@ int main(int argc, char *argv[]) {
 						if (registrarUsuario(nomC, conC, 0, getNumPersonas())
 								== 1) {
 							resul = 1;
+							l.mensajeLog("REGISTRO DE CLIENTE");
 						} else {
 							resul = 0;
+							l.errorLog("ERROR EN REGISTRO DE CLIENTE");
 						}
 						sprintf(sendBuff, "%d", resul);
 						send(comm_socket, sendBuff, sizeof(sendBuff), 0); //Le env�a al cliente 1,2,0
@@ -434,7 +473,6 @@ int main(int argc, char *argv[]) {
 					case '0':
 						break;
 					default:
-						cout << "No existe opcion" << endl;
 						break;
 					}
 				} while (opcionC != '0');
@@ -445,13 +483,13 @@ int main(int argc, char *argv[]) {
 				break;
 
 			default:
-				cout << "No existe esta opcion" << endl;
 				break;
 			}
 
 		} while (opcion != '0');
 		guardarDatos();
 		borrarDatosTablas();
+		l.mensajeLog("CONEXION FINALIZADA");
 		/*ACABA EL PROGRAMA DEL SERVIDOR*/
 
 	} while (fin == 0);
