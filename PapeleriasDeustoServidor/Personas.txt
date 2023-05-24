@@ -19,7 +19,12 @@
  Permiso: 0
  ID: 3
 [Usuario]
- Nombre: Final
- Contraseña: final
+ Nombre: Prueba
+ Contraseña: prueba
  Permiso: 1
  ID: 4
+[Usuario]
+ Nombre: OtraPrueba
+ Contraseña: otra
+ Permiso: 0
+ ID: 5

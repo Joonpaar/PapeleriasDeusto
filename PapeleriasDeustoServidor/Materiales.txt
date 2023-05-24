@@ -12,3 +12,52 @@
  Precio: 1.000000
  Unidades: 83
  Marca: 111B
+[MATERIAL]
+ Codigo: 30C
+ Nombre: Cuaderno
+ Color: Verde
+ Precio: 2.500000
+ Unidades: 50
+ Marca: 222C
+[MATERIAL]
+ Codigo: 40D
+ Nombre: Lapiz
+ Color: Amarillo
+ Precio: 0.250000
+ Unidades: 100
+ Marca: 333D
+[MATERIAL]
+ Codigo: 50E
+ Nombre: Carpeta
+ Color: Roja
+ Precio: 3.000000
+ Unidades: 20
+ Marca: 444E
+[MATERIAL]
+ Codigo: 60A
+ Nombre: Goma
+ Color: Blanca
+ Precio: 0.200000
+ Unidades: 75
+ Marca: 000A
+[MATERIAL]
+ Codigo: 70B
+ Nombre: Regla
+ Color: Transparente
+ Precio: 1.500000
+ Unidades: 40
+ Marca: 111B
+[MATERIAL]
+ Codigo: 80C
+ Nombre: Tijeras
+ Color: Plateado
+ Precio: 2.000000
+ Unidades: 30
+ Marca: 222C
+[MATERIAL]
+ Codigo: 90D
+ Nombre: Boli
+ Color: Negro
+ Precio: 0.750000
+ Unidades: 0
+ Marca: 333D

@@ -23,8 +23,6 @@ int crearTablaMarca() {
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "No se pudo crear la tabla: %s\n", errmsg);
 		sqlite3_free(errmsg);
-	} else {
-		printf("Tabla marca creada correctamente.\n");
 	}
 	sqlite3_close(db);
 	return 0;
@@ -67,8 +65,6 @@ int importarMarcas() {
 				fprintf(stderr, "No se pudo insertar en la tabla: %s\n",
 						errmsg);
 				sqlite3_free(errmsg);
-			} else {
-				printf("Se ha insertado correctamente.\n");
 			}
 		}
 		fclose(pf);
@@ -98,8 +94,6 @@ int crearTablaMateriales() {
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "No se pudo crear la tabla: %s\n", errmsg);
 		sqlite3_free(errmsg);
-	} else {
-		printf("Tabla material  creada correctamente.\n");
 	}
 	sqlite3_close(db);
 	return 0;
@@ -136,8 +130,6 @@ int importarMateriales() {
 				fprintf(stderr, "No se pudo insertar en la tabla: %s\n",
 						errmsg);
 				sqlite3_free(errmsg);
-			} else {
-				printf("Se ha insertado correctamente.\n");
 			}
 		}
 		fclose(pf);
@@ -169,8 +161,6 @@ int crearTablaPersona() {
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "No se pudo crear la tabla: %s\n", errmsg);
 		sqlite3_free(errmsg);
-	} else {
-		printf("Tabla persona creada correctamente.\n");
 	}
 	sqlite3_close(db);
 	return 0;
@@ -204,8 +194,6 @@ int importarPersonas() {
 				fprintf(stderr, "No se pudo insertar en la tabla: %s\n",
 						errmsg);
 				sqlite3_free(errmsg);
-			} else {
-				printf("Se ha insertado correctamente.\n");
 			}
 		}
 		fclose(pf);
@@ -235,8 +223,6 @@ int crearTablaCompra() {
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "No se pudo crear la tabla: %s\n", errmsg);
 		sqlite3_free(errmsg);
-	} else {
-		printf("Tabla compra creada correctamente.\n");
 	}
 	sqlite3_close(db);
 	return 0;
@@ -271,8 +257,6 @@ int importarCompras() {
 				fprintf(stderr, "No se pudo insertar en la tabla: %s\n",
 						errmsg);
 				sqlite3_free(errmsg);
-			} else {
-				printf("Se ha insertado correctamente.\n");
 			}
 		}
 		fclose(pf);
@@ -559,20 +543,7 @@ int verMateriales(SOCKET comm_socket) {
 		unidades = sqlite3_column_int(stmt, 4);
 		sprintf(cod_marca, "%s", (char*) sqlite3_column_text(stmt, 5));
 
-		int pos = 0, enc = 0;
-		char *codigo, *nom;
-		while (pos < 5 && !enc) {
-			codigo = strtok(marcas[pos], " ");
-			nom = strtok(NULL, "");
-			if (strcmp(codigo, cod_marca) == 0) {
-				enc = 1;
-			} else {
-				pos++;
-			}
-		}
-		sprintf(nomMarca, "%s", nom);
-
-		sprintf(sendBuff, "%s %s %s %f %i %s %s", cod_material, nombre, color,
+		sprintf(sendBuff, "%s %s %s %.2f %i %s %s", cod_material, nombre, color,
 				precio, unidades, cod_marca, nomMarca);
 		send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 		result = sqlite3_step(stmt); //Ejecutar la sentencia
@@ -889,6 +860,7 @@ int crearTablas() {
 	crearTablaMateriales();
 	crearTablaPersona();
 	crearTablaCompra();
+	printf("Tablas creadas y gestionadas correctamente\n");
 	return 0;
 }
 
