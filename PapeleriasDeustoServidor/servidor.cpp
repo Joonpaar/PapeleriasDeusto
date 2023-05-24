@@ -489,7 +489,7 @@ int main(int argc, char *argv[]) {
 		} while (opcion != '0');
 		guardarDatos();
 		borrarDatosTablas();
-		l.mensajeLog("CONEXION FINALIZADA\n");
+		l.mensajeLog("CONEXION FINALIZADA");
 		/*ACABA EL PROGRAMA DEL SERVIDOR*/
 
 	} while (fin == 0);

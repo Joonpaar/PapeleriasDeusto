@@ -46,15 +46,3 @@
  Material: 10A
  Cantidad: 25
  Importe: 12.500000
-[COMPRA]
- Ticket: 1312557891
- Usuario: Jon
- Material: 90D
- Cantidad: 50
- Importe: 37.500000
-[COMPRA]
- Ticket: 1312675313
- Usuario: Jon
- Material: 90D
- Cantidad: 10
- Importe: 7.500000

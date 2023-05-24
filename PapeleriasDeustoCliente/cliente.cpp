@@ -91,7 +91,7 @@ char menuCliente() {
 	cout << "MENU CLIENTE" << endl;
 	cout << "1. COMPRAR" << endl;
 	cout << "2. ESTADISTICAS" << endl;
-	cout << "3. MI CUENTA" << endl;
+	cout << "3. HISTORIAL" << endl;
 	cout << "0. CERRAR SESION" << endl;
 	cout << "Elige una opcion: " << endl;
 	;
