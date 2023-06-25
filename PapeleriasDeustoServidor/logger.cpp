@@ -14,12 +14,12 @@ void logger:: mensajeLog(const char* msg){
 	FILE * log=fopen("log.txt", "a");
 	//fprintf(stderr, "%s\n", msg);
 	//fflush(stderr);
-	fprintf(log, "%s\n", msg);
+	fprintf(log, "%s\n\n", msg);
 	fclose(log);
 }
 
 void logger::errorLog(const char* msg){
 	char cadena[200];
-	sprintf(cadena, "Error: %s\n", msg);
+	sprintf(cadena, "Error: %s", msg);
 	mensajeLog(cadena);
 }

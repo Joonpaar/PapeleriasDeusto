@@ -559,19 +559,6 @@ int verMateriales(SOCKET comm_socket) {
 		unidades = sqlite3_column_int(stmt, 4);
 		sprintf(cod_marca, "%s", (char*) sqlite3_column_text(stmt, 5));
 
-		int pos = 0, enc = 0;
-		char *codigo, *nom;
-		while (pos < 5 && !enc) {
-			codigo = strtok(marcas[pos], " ");
-			nom = strtok(NULL, "");
-			if (strcmp(codigo, cod_marca) == 0) {
-				enc = 1;
-			} else {
-				pos++;
-			}
-		}
-		sprintf(nomMarca, "%s", nom);
-
 		sprintf(sendBuff, "%s %s %s %f %i %s %s", cod_material, nombre, color,
 				precio, unidades, cod_marca, nomMarca);
 		send(comm_socket, sendBuff, sizeof(sendBuff), 0);
